@@ -1,10 +1,14 @@
-module Counter (Model, init, Action, update, view) where
+module Equitorium (Model, init, Action, update, view) where
 
 import Html exposing (..)
 
 -- MODEL
 
 type alias Model = Int
+
+
+init : Model
+init = 0
 
 
 -- UPDATE
@@ -14,10 +18,10 @@ type Action = Act
 update : Action -> Model -> Model
 update action model =
   case action of
-    Act -> return model
+    Act -> model
 
 
 -- VIEW
 
-view : Model -> Html
-view = div [] []
+view : Signal.Address Action -> Model -> Html
+view address model = div [] []
