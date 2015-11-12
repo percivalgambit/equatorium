@@ -1,24 +1,42 @@
 module Equitorium (Model, init, Action, update, view) where
 
+import Graphics.Collage as Collage
+
 import Html exposing (..)
 
 -- MODEL
 
-type alias Model = Int
+type alias Model =
+    { disks : List (ID, Collage.Form)
+    }
 
+type alias ID = Int
+
+enumerate : List a -> List (Int, a)
+enumerate = List.indexedMap (,)
 
 init : Model
-init = 0
+init =
+    let circles = [Collage.circle 5.0, Collage.circle 3.5, Collage.circle 10.0]
+        outlineCircles = List.map (Collage.outlined Collage.defaultLine)
+    in
+        { disks = circles |> outlineCircles |> enumerate }
 
 
 -- UPDATE
 
-type Action = Act
+type Action = Rotate ID
 
 update : Action -> Model -> Model
 update action model =
   case action of
-    Act -> model
+    Rotate id -> 
+        let updateDisk (diskID, diskForm) =
+            if diskID >= id
+                then (diskID, diskForm)
+                else (diskID, diskForm)
+        in
+            { model | disks <- List.map updateDisk model.disks }
 
 
 -- VIEW
