@@ -1,32 +1,55 @@
 module Disk where
 
-import Graphics.Collage as Collage
-
-import Html exposing (..)
+import Svg exposing (Svg, circle, svg)
+import Svg.Attributes exposing (cx, cy, r, fill, stroke, strokeWidth, width, height)
 
 -- MODEL
 
-type alias Model =
-    { disk : Collage.Form }
+type alias Model = 
+    { center : Point
+    , radius : Float
+    , angle : Degrees -- Measured from the top of the disk
+    }
 
-init : Float -> Model
-init radius = let circle = Collage.circle radius
-              in { disk = Collage.outlined Collage.defaultLine circle }
+type alias Degrees = Float
+
+type alias Point = 
+    { x : Float
+    , y : Float
+    }
+
+init : Point -> Float -> Model
+init center radius =
+    { center = center
+    , radius = radius
+    , angle = 0
+    }
 
 
 -- UPDATE
 
-type Action = Rotate
+type Action = Rotate Point Float
 
 update : Action -> Model -> Model
 update action model =
   case action of
-    Rotate ->
+    Rotate rotation_center degrees ->
         model
 
 
 -- VIEW
 
-view : Signal.Address Action -> Model -> Html
-view address model = let element = Collage.collage 0 0 [model.disk]
-                     in div [] [fromElement element]
+view : Signal.Address Action -> Model -> Svg
+view address model =
+    svg
+        [width "1000", height "1000"]
+        [ circle
+            [ cx (toString model.center.x)
+            , cy (toString model.center.y)
+            , r (toString model.radius)
+            , fill "none"
+            , stroke "black"
+            , strokeWidth "1"
+            ]
+            []
+        ]
