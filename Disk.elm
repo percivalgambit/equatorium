@@ -2,13 +2,16 @@ module Disk where
 
 import Graphics.Collage as Collage
 
+import Html exposing (..)
+
 -- MODEL
 
 type alias Model =
     { disk : Collage.Form }
 
 init : Float -> Model
-init = Collage.circle >> Collage.outlined Collage.defaultLine
+init radius = let circle = Collage.circle radius
+              in { disk = Collage.outlined Collage.defaultLine circle }
 
 
 -- UPDATE
@@ -25,4 +28,5 @@ update action model =
 -- VIEW
 
 view : Signal.Address Action -> Model -> Html
-view address model = div [] []
+view address model = let element = Collage.collage 0 0 [model.disk]
+                     in div [] [fromElement element]
