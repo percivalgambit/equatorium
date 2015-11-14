@@ -1795,17 +1795,17 @@ Elm.Dict.make = function (_elm) {
                       ,toList: toList
                       ,fromList: fromList};
    return _elm.Dict.values;
-};Elm.Equitorium = Elm.Equitorium || {};
-Elm.Equitorium.make = function (_elm) {
+};Elm.Disk = Elm.Disk || {};
+Elm.Disk.make = function (_elm) {
    "use strict";
-   _elm.Equitorium = _elm.Equitorium || {};
-   if (_elm.Equitorium.values)
-   return _elm.Equitorium.values;
+   _elm.Disk = _elm.Disk || {};
+   if (_elm.Disk.values)
+   return _elm.Disk.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Equitorium",
+   $moduleName = "Disk",
    $Basics = Elm.Basics.make(_elm),
    $Graphics$Collage = Elm.Graphics.Collage.make(_elm),
    $Html = Elm.Html.make(_elm),
@@ -1815,67 +1815,45 @@ Elm.Equitorium.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm);
    var view = F2(function (address,
    model) {
-      return A2($Html.div,
-      _L.fromArray([]),
-      _L.fromArray([]));
+      return function () {
+         var element = A3($Graphics$Collage.collage,
+         0,
+         0,
+         _L.fromArray([model.disk]));
+         return A2($Html.div,
+         _L.fromArray([]),
+         _L.fromArray([$Html.fromElement(element)]));
+      }();
    });
    var update = F2(function (action,
    model) {
       return function () {
          switch (action.ctor)
-         {case "Rotate":
-            return function () {
-                 var updateDisk = function (_v2) {
-                    return function () {
-                       switch (_v2.ctor)
-                       {case "_Tuple2":
-                          return _U.cmp(_v2._0,
-                            action._0) > -1 ? {ctor: "_Tuple2"
-                                              ,_0: _v2._0
-                                              ,_1: _v2._1} : {ctor: "_Tuple2"
-                                                             ,_0: _v2._0
-                                                             ,_1: _v2._1};}
-                       _U.badCase($moduleName,
-                       "between lines 35 and 37");
-                    }();
-                 };
-                 return _U.replace([["disks"
-                                    ,A2($List.map,
-                                    updateDisk,
-                                    model.disks)]],
-                 model);
-              }();}
+         {case "Rotate": return model;}
          _U.badCase($moduleName,
-         "between lines 32 and 39");
+         "between lines 23 and 25");
       }();
    });
-   var Rotate = function (a) {
-      return {ctor: "Rotate"
-             ,_0: a};
+   var Rotate = {ctor: "Rotate"};
+   var init = function (radius) {
+      return function () {
+         var circle = $Graphics$Collage.circle(radius);
+         return {_: {}
+                ,disk: A2($Graphics$Collage.outlined,
+                $Graphics$Collage.defaultLine,
+                circle)};
+      }();
    };
-   var enumerate = $List.indexedMap(F2(function (v0,
-   v1) {
-      return {ctor: "_Tuple2"
-             ,_0: v0
-             ,_1: v1};
-   }));
-   var init = function () {
-      var outlineCircles = $List.map($Graphics$Collage.outlined($Graphics$Collage.defaultLine));
-      var circles = _L.fromArray([$Graphics$Collage.circle(5.0)
-                                 ,$Graphics$Collage.circle(3.5)
-                                 ,$Graphics$Collage.circle(10.0)]);
-      return {_: {}
-             ,disks: enumerate(outlineCircles(circles))};
-   }();
    var Model = function (a) {
-      return {_: {},disks: a};
+      return {_: {},disk: a};
    };
-   _elm.Equitorium.values = {_op: _op
-                            ,init: init
-                            ,update: update
-                            ,view: view
-                            ,Model: Model};
-   return _elm.Equitorium.values;
+   _elm.Disk.values = {_op: _op
+                      ,Model: Model
+                      ,init: init
+                      ,Rotate: Rotate
+                      ,update: update
+                      ,view: view};
+   return _elm.Disk.values;
 };Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -3500,16 +3478,16 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
-   $Equitorium = Elm.Equitorium.make(_elm),
+   $Disk = Elm.Disk.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
    var main = $StartApp$Simple.start({_: {}
-                                     ,model: $Equitorium.init
-                                     ,update: $Equitorium.update
-                                     ,view: $Equitorium.view});
+                                     ,model: $Disk.init(5.0)
+                                     ,update: $Disk.update
+                                     ,view: $Disk.view});
    _elm.Main.values = {_op: _op
                       ,main: main};
    return _elm.Main.values;
