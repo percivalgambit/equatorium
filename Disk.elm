@@ -1,7 +1,8 @@
 module Disk where
 
 import Svg exposing (Svg, circle, svg)
-import Svg.Attributes exposing (cx, cy, r, fill, stroke, strokeWidth, width, height)
+import Svg.Attributes exposing (cx, cy, r, fill, stroke, strokeWidth, width,
+                                height)
 
 -- MODEL
 
@@ -18,9 +19,9 @@ type alias Point =
     , y : Float
     }
 
-init : Point -> Float -> Model
-init center radius =
-    { center = center
+init : (Float, Float) -> Float -> Model
+init (x, y) radius =
+    { center = { x = x, y = y }
     , radius = radius
     , angle = 0
     }
@@ -42,7 +43,9 @@ update action model =
 view : Signal.Address Action -> Model -> Svg
 view address model =
     svg
-        [width "1000", height "1000"]
+        [ width (toString <| model.center.x + model.radius)
+        , height (toString <| model.center.y + model.radius)
+        ]
         [ circle
             [ cx (toString model.center.x)
             , cy (toString model.center.y)

@@ -4,7 +4,7 @@ import StartApp.Simple exposing (start)
 
 main =
   start
-    { model = init { x = 600, y = 200 } 100
+    { model = init (75, 100) 50
     , update = update
     , view = view
     }

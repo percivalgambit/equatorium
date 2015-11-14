@@ -6,4 +6,4 @@ equitorium: Main.elm Disk.elm Equitorium.elm
 
 .PHONY: clean
 clean:
-	$(RM) elm-stuff
+	rm -rf elm-stuff
