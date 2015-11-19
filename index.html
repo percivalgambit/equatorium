@@ -1812,7 +1812,8 @@ Elm.Disk.make = function (_elm) {
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Svg = Elm.Svg.make(_elm),
-   $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
+   $Svg$Attributes = Elm.Svg.Attributes.make(_elm),
+   $Svg$Events = Elm.Svg.Events.make(_elm);
    var Rotate = F2(function (a,b) {
       return {ctor: "Rotate"
              ,_0: a
@@ -1863,14 +1864,14 @@ Elm.Disk.make = function (_elm) {
                        _v11.x - newCenter.x);
                     }();
                  };
+                 var newAngle = getAngleOnDisk(doRotation(getAngleIndicatorPosition(model)));
                  return _U.replace([["center"
                                     ,newCenter]
-                                   ,["angle"
-                                    ,getAngleOnDisk(doRotation(getAngleIndicatorPosition(model)))]],
+                                   ,["angle",newAngle]],
                  model);
               }();}
          _U.badCase($moduleName,
-         "between lines 41 and 66");
+         "between lines 41 and 68");
       }();
    });
    var view = F2(function (address,
@@ -1891,32 +1892,27 @@ Elm.Disk.make = function (_elm) {
                       ,$Svg$Attributes.stroke("black")
                       ,$Svg$Attributes.strokeWidth("1")]),
          _L.fromArray([]));
-         return A2($Svg.svg,
-         _L.fromArray([$Svg$Attributes.width($Basics.toString(model.center.x + model.radius * 1.1))
-                      ,$Svg$Attributes.height($Basics.toString(model.center.y + model.radius * 1.1))]),
-         _L.fromArray([A2($Svg.g,
-         _L.fromArray([]),
+         return A2($Svg.g,
+         _L.fromArray([$Svg$Events.onClick(A2($Signal.message,
+         address,
+         A2(Rotate,
+         model.center,
+         $Basics.pi / 2)))]),
          _L.fromArray([disk
-                      ,angleIndicator]))]));
-      }();
-   });
-   var init = F2(function (_v13,
-   radius) {
-      return function () {
-         switch (_v13.ctor)
-         {case "_Tuple2": return {_: {}
-                                 ,angle: 0
-                                 ,center: {_: {}
-                                          ,x: _v13._0
-                                          ,y: _v13._1}
-                                 ,radius: radius};}
-         _U.badCase($moduleName,
-         "between lines 24 and 27");
+                      ,angleIndicator]));
       }();
    });
    var Point = F2(function (a,b) {
       return {_: {},x: a,y: b};
    });
+   var init = function (_v13) {
+      return function () {
+         return {_: {}
+                ,angle: 0
+                ,center: A2(Point,_v13.x,_v13.y)
+                ,radius: _v13.radius};
+      }();
+   };
    var Model = F3(function (a,
    b,
    c) {
@@ -1928,8 +1924,97 @@ Elm.Disk.make = function (_elm) {
    _elm.Disk.values = {_op: _op
                       ,init: init
                       ,update: update
-                      ,view: view};
+                      ,view: view
+                      ,Model: Model};
    return _elm.Disk.values;
+};Elm.Equitorium = Elm.Equitorium || {};
+Elm.Equitorium.make = function (_elm) {
+   "use strict";
+   _elm.Equitorium = _elm.Equitorium || {};
+   if (_elm.Equitorium.values)
+   return _elm.Equitorium.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Equitorium",
+   $Basics = Elm.Basics.make(_elm),
+   $Disk = Elm.Disk.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Svg = Elm.Svg.make(_elm),
+   $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
+   var Epicycle = function (a) {
+      return {ctor: "Epicycle"
+             ,_0: a};
+   };
+   var Deferent = function (a) {
+      return {ctor: "Deferent"
+             ,_0: a};
+   };
+   var view = F2(function (address,
+   _v0) {
+      return function () {
+         return A2($Svg.svg,
+         _L.fromArray([$Svg$Attributes.width($Basics.toString(_v0.deferent.center.x + _v0.deferent.radius * 1.1))
+                      ,$Svg$Attributes.height($Basics.toString(_v0.deferent.center.y + _v0.deferent.radius * 1.1))]),
+         _L.fromArray([A2($Disk.view,
+                      A2($Signal.forwardTo,
+                      address,
+                      Deferent),
+                      _v0.deferent)
+                      ,A2($Disk.view,
+                      A2($Signal.forwardTo,
+                      address,
+                      Epicycle),
+                      _v0.epicycle)]));
+      }();
+   });
+   var init = $Basics.identity;
+   var Model = F2(function (a,b) {
+      return {_: {}
+             ,deferent: a
+             ,epicycle: b};
+   });
+   var update = F2(function (action,
+   _v2) {
+      return function () {
+         return function () {
+            switch (action.ctor)
+            {case "Deferent":
+               return function () {
+                    var newEpicycle = A2($Disk.update,
+                    action._0,
+                    _v2.epicycle);
+                    var newDeferent = A2($Disk.update,
+                    action._0,
+                    _v2.deferent);
+                    return A2(Model,
+                    newDeferent,
+                    newEpicycle);
+                 }();
+               case "Epicycle":
+               return function () {
+                    var newEpicycle = A2($Disk.update,
+                    action._0,
+                    _v2.epicycle);
+                    return A2(Model,
+                    _v2.deferent,
+                    newEpicycle);
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 27 and 38");
+         }();
+      }();
+   });
+   _elm.Equitorium.values = {_op: _op
+                            ,init: init
+                            ,update: update
+                            ,view: view
+                            ,Model: Model};
+   return _elm.Equitorium.values;
 };Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -3555,19 +3640,24 @@ Elm.Main.make = function (_elm) {
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
    $Disk = Elm.Disk.make(_elm),
+   $Equitorium = Elm.Equitorium.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
    var main = $StartApp$Simple.start({_: {}
-                                     ,model: A2($Disk.init,
-                                     {ctor: "_Tuple2"
-                                     ,_0: 75
-                                     ,_1: 100},
-                                     50)
-                                     ,update: $Disk.update
-                                     ,view: $Disk.view});
+                                     ,model: $Equitorium.init({_: {}
+                                                              ,deferent: $Disk.init({_: {}
+                                                                                    ,radius: 125
+                                                                                    ,x: 250
+                                                                                    ,y: 250})
+                                                              ,epicycle: $Disk.init({_: {}
+                                                                                    ,radius: 50
+                                                                                    ,x: 250
+                                                                                    ,y: 200})})
+                                     ,update: $Equitorium.update
+                                     ,view: $Equitorium.view});
    _elm.Main.values = {_op: _op
                       ,main: main};
    return _elm.Main.values;
