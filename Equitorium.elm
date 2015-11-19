@@ -1,45 +1,50 @@
 module Equitorium (Model, init, Action, update, view) where
 
-import Graphics.Collage as Collage
+import Disk
 
-import Html exposing (..)
+import Svg exposing (Svg, svg)
+import Svg.Attributes exposing (..)
 
 -- MODEL
 
-type alias Model =
-    { disks : List (ID, Collage.Form)
+type alias Model = 
+    { deferent : Disk.Model
+    , epicycle : Disk.Model
     }
 
-type alias ID = Int
-
-enumerate : List a -> List (Int, a)
-enumerate = List.indexedMap (,)
-
-init : Model
-init =
-    let circles = [Collage.circle 5.0, Collage.circle 3.5, Collage.circle 10.0]
-        outlineCircles = List.map (Collage.outlined Collage.defaultLine)
-    in
-        { disks = circles |> outlineCircles |> enumerate }
+init : Model -> Model
+init = identity
 
 
 -- UPDATE
 
-type Action = Rotate ID
+type Action
+    = Deferent Disk.Action
+    | Epicycle Disk.Action
 
 update : Action -> Model -> Model
-update action model =
+update action {deferent, epicycle} =
   case action of
-    Rotate id -> 
-        let updateDisk (diskID, diskForm) =
-            if diskID >= id
-                then (diskID, diskForm)
-                else (diskID, diskForm)
+    Deferent act ->
+        let
+            newDeferent = Disk.update act deferent
+            newEpicycle = Disk.update act epicycle
         in
-            { model | disks <- List.map updateDisk model.disks }
-
+            Model newDeferent newEpicycle
+    Epicycle act ->
+        let
+            newEpicycle = Disk.update act epicycle
+        in
+            Model deferent newEpicycle
 
 -- VIEW
 
-view : Signal.Address Action -> Model -> Html
-view address model = div [] []
+view : Signal.Address Action -> Model -> Svg
+view address {deferent, epicycle} = 
+    svg
+        [ width << toString <| deferent.center.x + deferent.radius * 1.1
+        , height << toString <| deferent.center.y + deferent.radius * 1.1
+        ]
+        [ Disk.view (Signal.forwardTo address Deferent) deferent
+        , Disk.view (Signal.forwardTo address Epicycle) epicycle
+        ]

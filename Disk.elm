@@ -1,6 +1,6 @@
-module Disk (init, update, view) where
+module Disk (Model, init, Action, update, view) where
 
-import Svg exposing (Svg, circle, svg, g, text', text)
+import Svg exposing (Svg, circle, g)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 
@@ -19,9 +19,9 @@ type alias Point =
     , y : Float
     }
 
-init : (Float, Float) -> Float -> Model
-init (x, y) radius =
-    { center = { x = x, y = y }
+init : { x:Float, y:Float, radius:Float } -> Model
+init {x, y, radius} = 
+    { center = Point x y
     , radius = radius
     , angle = 0
     }
@@ -59,11 +59,13 @@ update action model =
             getAngleOnDisk : Point -> Radians
             getAngleOnDisk {x, y} =
                 pi/2 + atan2 (y - newCenter.y) (x - newCenter.x)
+            newAngle : Radians
+            newAngle = model |> getAngleIndicatorPosition
+                             |> doRotation
+                             |> getAngleOnDisk
         in
             { model | center <- newCenter
-                    , angle <- getAngleOnDisk <| doRotation
-                                              <| getAngleIndicatorPosition
-                                              <| model }
+                    , angle <- newAngle }
 
 
 -- VIEW
@@ -91,10 +93,5 @@ view address model =
                 ]
                 []
     in
-        svg
-            [ width << toString <| model.center.x + model.radius * 1.1
-            , height << toString <| model.center.y + model.radius * 1.1
-            ]
-            [ g []
-                [ disk, angleIndicator ]
-            ]
+        g [ onClick (Signal.message address (Rotate model.center (pi/2))) ]
+          [ disk, angleIndicator ]
