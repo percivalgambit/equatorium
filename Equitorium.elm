@@ -1,9 +1,12 @@
-module Equitorium (Model, init, Action, update, view) where
+module Equitorium (Model, init, Action, update, view, inputs) where
 
 import Disk
 
+import DragAndDrop
+import Effects exposing (Effects)
 import Svg exposing (Svg, svg)
 import Svg.Attributes exposing (..)
+
 
 -- MODEL
 
@@ -12,8 +15,19 @@ type alias Model =
     , epicycle : Disk.Model
     }
 
-init : Model -> Model
-init = identity
+
+init : (Model, Effects Action)
+init =
+    let
+        (deferent, deferentFx) = Disk.init { x = 250, y = 250, radius = 125 }
+        (epicycle, epicycleFx) = Disk.init { x = 250, y = 200, radius = 50 }
+    in
+        ( Model deferent epicycle
+        , Effects.batch
+            [ Effects.map Deferent deferentFx
+            , Effects.map Epicycle epicycleFx
+            ]
+        )
 
 
 -- UPDATE
@@ -22,20 +36,29 @@ type Action
     = Deferent Disk.Action
     | Epicycle Disk.Action
 
-update : Action -> Model -> Model
+
+update : Action -> Model -> (Model, Effects Action)
 update action {deferent, epicycle} =
   case action of
     Deferent act ->
         let
-            newDeferent = Disk.update act deferent
-            newEpicycle = Disk.update act epicycle
+            (newDeferent, deferentFx) = Disk.update act deferent
+            (newEpicycle, epicycleFx) = Disk.update act epicycle
         in
-            Model newDeferent newEpicycle
+            ( Model newDeferent newEpicycle
+            , Effects.batch
+                [ Effects.map Deferent deferentFx
+                , Effects.map Epicycle epicycleFx
+                ]
+            )
     Epicycle act ->
         let
-            newEpicycle = Disk.update act epicycle
+            (newEpicycle, epicycleFx) = Disk.update act epicycle
         in
-            Model deferent newEpicycle
+            ( Model deferent newEpicycle
+            , Effects.map Epicycle epicycleFx
+            )
+
 
 -- VIEW
 
@@ -48,3 +71,9 @@ view address {deferent, epicycle} =
         [ Disk.view (Signal.forwardTo address Deferent) deferent
         , Disk.view (Signal.forwardTo address Epicycle) epicycle
         ]
+
+
+-- INPUTS
+
+inputs : List (Signal Action)
+inputs = []
