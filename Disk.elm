@@ -9,8 +9,10 @@ import Svg.Events exposing (onClick)
 type alias Model = 
     { center : Point
     , radius : Float
-    , angle : Radians -- Measured from the top of the disk
+    , angle : Degrees -- Measured from the top of the disk
     }
+
+type alias Degrees = Float
 
 type alias Radians = Float
 
@@ -26,15 +28,21 @@ init {x, y, radius} =
     , angle = 0
     }
 
+radiansToDegrees : Radians -> Degrees
+radiansToDegrees radians = radians * 180/pi
+
+degreesToRadians : Degrees -> Radians
+degreesToRadians = degrees
+
 getAngleIndicatorPosition : Model -> Point
 getAngleIndicatorPosition {center, radius, angle} =
-    { x = center.x + radius * sin angle
-    , y = center.y - radius * cos angle
+    { x = center.x + radius * (sin <| degreesToRadians angle)
+    , y = center.y - radius * (cos <| degreesToRadians angle)
     }
 
 -- UPDATE
 
-type Action = Rotate Point Float
+type Action = Rotate Point Radians
 
 update : Action -> Model -> Model
 update action model =
@@ -58,7 +66,7 @@ update action model =
             newCenter = doRotation model.center
             getAngleOnDisk : Point -> Radians
             getAngleOnDisk {x, y} =
-                pi/2 + atan2 (y - newCenter.y) (x - newCenter.x)
+                radiansToDegrees <| pi/2 + atan2 (y - newCenter.y) (x - newCenter.x)
             newAngle : Radians
             newAngle = model |> getAngleIndicatorPosition
                              |> doRotation
