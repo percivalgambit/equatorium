@@ -23,40 +23,53 @@ init =
         (epicycle, epicycleFx) = Disk.init { x = 250, y = 200, radius = 50 }
     in
         ( Model deferent epicycle
-        , Effects.batch
-            [ Effects.map Deferent deferentFx
-            , Effects.map Epicycle epicycleFx
-            ]
+        , Effects.none
         )
 
 
 -- UPDATE
 
-type Action
-    = Deferent Disk.Action
-    | Epicycle Disk.Action
+type Action =
+    MouseEvent DragAndDrop.MouseEvent | Deferent Disk.Action | Epicycle Disk.Action
 
 
 update : Action -> Model -> (Model, Effects Action)
 update action {deferent, epicycle} =
   case action of
+    MouseEvent mouseEvent ->
+        let
+            epicycleAction =
+                Maybe.map Epicycle <| Disk.mouseEventToDiskAction mouseEvent epicycle
+            deferentAction =
+                Maybe.map Deferent <| Disk.mouseEventToDiskAction mouseEvent deferent
+        in
+            case Maybe.oneOf [ epicycleAction, deferentAction ] of
+                Just act ->
+                    update act (Model deferent epicycle)
+                Nothing ->
+                    ( Model deferent epicycle
+                    , Effects.none
+                    )
     Deferent act ->
         let
             (newDeferent, deferentFx) = Disk.update act deferent
             (newEpicycle, epicycleFx) = Disk.update act epicycle
         in
-            ( Model newDeferent newEpicycle
-            , Effects.batch
-                [ Effects.map Deferent deferentFx
-                , Effects.map Epicycle epicycleFx
-                ]
-            )
+            case act of
+                Disk.Rotate _ _ ->
+                    ( Model newDeferent newEpicycle
+                    , Effects.none
+                    )
+                _ ->
+                    ( Model newDeferent epicycle
+                    , Effects.none
+                    )
     Epicycle act ->
         let
             (newEpicycle, epicycleFx) = Disk.update act epicycle
         in
             ( Model deferent newEpicycle
-            , Effects.map Epicycle epicycleFx
+            , Effects.none
             )
 
 
@@ -76,4 +89,4 @@ view address {deferent, epicycle} =
 -- INPUTS
 
 inputs : List (Signal Action)
-inputs = []
+inputs = [ Signal.map MouseEvent DragAndDrop.mouseEvents ]

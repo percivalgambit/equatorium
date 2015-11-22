@@ -1,4 +1,4 @@
-module Disk (Model, init, Action, update, view, mouseEventToDiskAction) where
+module Disk (Model, init, Action(..), update, view, mouseEventToDiskAction) where
 
 import DragAndDrop
 import Effects exposing (Effects)
@@ -16,7 +16,6 @@ type alias Model =
     , radius : Float
     , angle : Degrees -- Measured from the top of the disk
     , selected : Bool -- If the disk has been clicked by the mouse
-    , selectionStart : Point -- Start of a drag sequence on the disk
     }
 
 type alias Degrees = Float
@@ -38,7 +37,6 @@ init {x, y, radius} =
             , radius = radius
             , angle = 0
             , selected = False
-            , selectionStart = Point 0 0
             }
     in
         ( model
@@ -63,7 +61,7 @@ getAngleIndicatorPosition {center, radius, angle} =
 
 -- UPDATE
 
-type Action = Rotate Point Radians | Select Point | Unselect
+type Action = Rotate Point Radians | Select | Unselect
 
 
 update : Action -> Model -> (Model, Effects Action)
@@ -105,10 +103,9 @@ update action model =
                         , angle <- newAngle }
         in
             ( newModel, Effects.none )
-    Select point ->
+    Select ->
         let
-            newModel = { model | selected <- True
-                               , selectionStart <- point }
+            newModel = { model | selected <- True }
         in
             ( newModel, Effects.none )
     Unselect ->
@@ -131,8 +128,8 @@ within point model =
         distance point model.center <= model.radius
 
 
-mouseEventToDiskAction : Model -> DragAndDrop.MouseEvent -> Action
-mouseEventToDiskAction model action =
+mouseEventToDiskAction : DragAndDrop.MouseEvent -> Model -> Maybe Action
+mouseEventToDiskAction action model =
     case action of
         DragAndDrop.StartAt origin ->
             let
@@ -140,9 +137,9 @@ mouseEventToDiskAction model action =
                     toPoint origin
             in
                 if originPoint `within` model then
-                    Select originPoint
+                    Just Select
                 else
-                    Unselect
+                    Nothing
         DragAndDrop.MoveFromTo origin destination ->
             if model.selected then
                 let
@@ -151,15 +148,18 @@ mouseEventToDiskAction model action =
                     destinationPoint =
                         toPoint destination
                     angle1 =
-                        atan2 (originPoint.y - model.selectionStart.y) (originPoint.x - model.selectionStart.x)
+                        atan2 (destinationPoint.y - model.center.y) (destinationPoint.x - model.center.x)
                     angle2 =
-                        atan2 (destinationPoint.y - model.selectionStart.y) (destinationPoint.x - model.selectionStart.x)
+                        atan2 (originPoint.y - model.center.y) (originPoint.x - model.center.x)
                 in
-                    Rotate model.center (angle1 - angle2)
+                    Just <| Rotate model.center (angle1 - angle2)
             else
-                Unselect
+                Nothing 
         DragAndDrop.EndAt destination ->
-            Unselect
+            if model.selected then
+                Just Unselect
+            else
+                Nothing
 
 
 -- VIEW
@@ -187,5 +187,5 @@ view address model =
                 ]
                 []
     in
-        g [ onClick (Signal.message address (Rotate model.center (pi/2))) ]
+        g []
           [ disk, angleIndicator ]
