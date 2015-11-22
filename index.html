@@ -92,6 +92,404 @@ Elm.Array.make = function (_elm) {
                        ,foldl: foldl
                        ,foldr: foldr};
    return _elm.Array.values;
+};Elm.Automaton = Elm.Automaton || {};
+Elm.Automaton.make = function (_elm) {
+   "use strict";
+   _elm.Automaton = _elm.Automaton || {};
+   if (_elm.Automaton.values)
+   return _elm.Automaton.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Automaton",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var dequeue = function (q) {
+      return function () {
+         switch (q.ctor)
+         {case "_Tuple2":
+            switch (q._0.ctor)
+              {case "[]": switch (q._1.ctor)
+                   {case "[]":
+                      return $Maybe.Nothing;}
+                   break;}
+              switch (q._1.ctor)
+              {case "::":
+                 return $Maybe.Just({ctor: "_Tuple2"
+                                    ,_0: q._1._0
+                                    ,_1: {ctor: "_Tuple2"
+                                         ,_0: q._0
+                                         ,_1: q._1._1}});
+                 case "[]":
+                 return dequeue({ctor: "_Tuple2"
+                                ,_0: _L.fromArray([])
+                                ,_1: $List.reverse(q._0)});}
+              break;}
+         _U.badCase($moduleName,
+         "between lines 307 and 310");
+      }();
+   };
+   var enqueue = F2(function (x,
+   _v5) {
+      return function () {
+         switch (_v5.ctor)
+         {case "_Tuple2":
+            return {ctor: "_Tuple2"
+                   ,_0: A2($List._op["::"],
+                   x,
+                   _v5._0)
+                   ,_1: _v5._1};}
+         _U.badCase($moduleName,
+         "on line 304, column 22 to 31");
+      }();
+   });
+   var empty = {ctor: "_Tuple2"
+               ,_0: _L.fromArray([])
+               ,_1: _L.fromArray([])};
+   var step = F2(function (a,_v9) {
+      return function () {
+         switch (_v9.ctor)
+         {case "Step": return _v9._0(a);}
+         _U.badCase($moduleName,
+         "on line 64, column 19 to 22");
+      }();
+   });
+   var run = F3(function (auto,
+   base,
+   inputs) {
+      return function () {
+         var step = F2(function (a,
+         _v12) {
+            return function () {
+               switch (_v12.ctor)
+               {case "_Tuple2":
+                  switch (_v12._0.ctor)
+                    {case "Step":
+                       return _v12._0._0(a);}
+                    break;}
+               _U.badCase($moduleName,
+               "on line 51, column 28 to 31");
+            }();
+         });
+         return A2($Signal.map,
+         function (_v17) {
+            return function () {
+               switch (_v17.ctor)
+               {case "_Tuple2":
+                  return _v17._1;}
+               _U.badCase($moduleName,
+               "on line 53, column 29 to 30");
+            }();
+         },
+         A3($Signal.foldp,
+         step,
+         {ctor: "_Tuple2"
+         ,_0: auto
+         ,_1: base},
+         inputs));
+      }();
+   });
+   var Step = function (a) {
+      return {ctor: "Step",_0: a};
+   };
+   _op[">>>"] = F2(function (f,g) {
+      return Step(function (a) {
+         return function () {
+            var $ = A2(step,a,f),
+            f$ = $._0,
+            b = $._1;
+            var $ = A2(step,b,g),
+            g$ = $._0,
+            c = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A2(_op[">>>"],f$,g$)
+                   ,_1: c};
+         }();
+      });
+   });
+   _op["<<<"] = F2(function (g,f) {
+      return Step(function (a) {
+         return function () {
+            var $ = A2(step,a,f),
+            f$ = $._0,
+            b = $._1;
+            var $ = A2(step,b,g),
+            g$ = $._0,
+            c = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A2(_op["<<<"],g$,f$)
+                   ,_1: c};
+         }();
+      });
+   });
+   var branch = F2(function (f,g) {
+      return Step(function (a) {
+         return function () {
+            var $ = A2(step,a,g),
+            g$ = $._0,
+            c = $._1;
+            var $ = A2(step,a,f),
+            f$ = $._0,
+            b = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A2(branch,f$,g$)
+                   ,_1: {ctor: "_Tuple2"
+                        ,_0: b
+                        ,_1: c}};
+         }();
+      });
+   });
+   var pair = F2(function (f,g) {
+      return Step(function (_v21) {
+         return function () {
+            switch (_v21.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var $ = A2(step,_v21._1,g),
+                    g$ = $._0,
+                    d = $._1;
+                    var $ = A2(step,_v21._0,f),
+                    f$ = $._0,
+                    c = $._1;
+                    return {ctor: "_Tuple2"
+                           ,_0: A2(pair,f$,g$)
+                           ,_1: {ctor: "_Tuple2"
+                                ,_0: c
+                                ,_1: d}};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 133 and 136");
+         }();
+      });
+   });
+   var first = function (auto) {
+      return Step(function (_v25) {
+         return function () {
+            switch (_v25.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var $ = A2(step,
+                    _v25._0,
+                    auto),
+                    f = $._0,
+                    o = $._1;
+                    return {ctor: "_Tuple2"
+                           ,_0: first(f)
+                           ,_1: {ctor: "_Tuple2"
+                                ,_0: o
+                                ,_1: _v25._1}};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 155 and 157");
+         }();
+      });
+   };
+   var second = function (auto) {
+      return Step(function (_v29) {
+         return function () {
+            switch (_v29.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var $ = A2(step,
+                    _v29._1,
+                    auto),
+                    f = $._0,
+                    o = $._1;
+                    return {ctor: "_Tuple2"
+                           ,_0: second(f)
+                           ,_1: {ctor: "_Tuple2"
+                                ,_0: _v29._0
+                                ,_1: o}};
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 176 and 178");
+         }();
+      });
+   };
+   var loop = F2(function (state,
+   auto) {
+      return Step(function (input) {
+         return function () {
+            var _ = A2(step,
+            {ctor: "_Tuple2"
+            ,_0: input
+            ,_1: state},
+            auto);
+            var auto$ = function () {
+               switch (_.ctor)
+               {case "_Tuple2":
+                  switch (_._1.ctor)
+                    {case "_Tuple2": return _._0;}
+                    break;}
+               _U.badCase($moduleName,
+               "on line 217, column 36 to 59");
+            }();
+            var output = function () {
+               switch (_.ctor)
+               {case "_Tuple2":
+                  switch (_._1.ctor)
+                    {case "_Tuple2":
+                       return _._1._0;}
+                    break;}
+               _U.badCase($moduleName,
+               "on line 217, column 36 to 59");
+            }();
+            var state$ = function () {
+               switch (_.ctor)
+               {case "_Tuple2":
+                  switch (_._1.ctor)
+                    {case "_Tuple2":
+                       return _._1._1;}
+                    break;}
+               _U.badCase($moduleName,
+               "on line 217, column 36 to 59");
+            }();
+            return {ctor: "_Tuple2"
+                   ,_0: A2(loop,state$,auto$)
+                   ,_1: output};
+         }();
+      });
+   });
+   var combine = function (autos) {
+      return Step(function (a) {
+         return function () {
+            var $ = $List.unzip(A2($List.map,
+            step(a),
+            autos)),
+            autos$ = $._0,
+            bs = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: combine(autos$)
+                   ,_1: bs};
+         }();
+      });
+   };
+   var pure = function (f) {
+      return Step(function (x) {
+         return {ctor: "_Tuple2"
+                ,_0: pure(f)
+                ,_1: f(x)};
+      });
+   };
+   var merge = function (f) {
+      return pure($Basics.uncurry(f));
+   };
+   var state = F2(function (s,f) {
+      return Step(function (x) {
+         return function () {
+            var s$ = A2(f,x,s);
+            return {ctor: "_Tuple2"
+                   ,_0: A2(state,s$,f)
+                   ,_1: s$};
+         }();
+      });
+   });
+   var count = A2(state,
+   0,
+   F2(function (_v48,c) {
+      return function () {
+         return c + 1;
+      }();
+   }));
+   var hiddenState = F2(function (s,
+   f) {
+      return Step(function (x) {
+         return function () {
+            var $ = A2(f,x,s),
+            s$ = $._0,
+            out = $._1;
+            return {ctor: "_Tuple2"
+                   ,_0: A2(hiddenState,out,f)
+                   ,_1: s$};
+         }();
+      });
+   });
+   var average = function (k) {
+      return function () {
+         var stepFull = F2(function (n,
+         _v50) {
+            return function () {
+               switch (_v50.ctor)
+               {case "_Tuple3":
+                  return function () {
+                       var _v55 = dequeue(_v50._0);
+                       switch (_v55.ctor)
+                       {case "Just":
+                          switch (_v55._0.ctor)
+                            {case "_Tuple2":
+                               return function () {
+                                    var sum$ = _v50._2 + n - _v55._0._0;
+                                    return {ctor: "_Tuple2"
+                                           ,_0: sum$ / $Basics.toFloat(_v50._1)
+                                           ,_1: {ctor: "_Tuple3"
+                                                ,_0: A2(enqueue,n,_v55._0._1)
+                                                ,_1: _v50._1
+                                                ,_2: sum$}};
+                                 }();}
+                            break;
+                          case "Nothing":
+                          return {ctor: "_Tuple2"
+                                 ,_0: 0
+                                 ,_1: {ctor: "_Tuple3"
+                                      ,_0: _v50._0
+                                      ,_1: _v50._1
+                                      ,_2: _v50._2}};}
+                       _U.badCase($moduleName,
+                       "between lines 322 and 330");
+                    }();}
+               _U.badCase($moduleName,
+               "between lines 322 and 330");
+            }();
+         });
+         var step = F2(function (n,
+         _v59) {
+            return function () {
+               switch (_v59.ctor)
+               {case "_Tuple3":
+                  return _U.eq(_v59._1,
+                    k) ? A2(stepFull,
+                    n,
+                    {ctor: "_Tuple3"
+                    ,_0: _v59._0
+                    ,_1: _v59._1
+                    ,_2: _v59._2}) : {ctor: "_Tuple2"
+                                     ,_0: (_v59._2 + n) / ($Basics.toFloat(_v59._1) + 1)
+                                     ,_1: {ctor: "_Tuple3"
+                                          ,_0: A2(enqueue,n,_v59._0)
+                                          ,_1: _v59._1 + 1
+                                          ,_2: _v59._2 + n}};}
+               _U.badCase($moduleName,
+               "between lines 317 and 319");
+            }();
+         });
+         return A2(hiddenState,
+         {ctor: "_Tuple3"
+         ,_0: empty
+         ,_1: 0
+         ,_2: 0},
+         step);
+      }();
+   };
+   _elm.Automaton.values = {_op: _op
+                           ,pure: pure
+                           ,state: state
+                           ,hiddenState: hiddenState
+                           ,run: run
+                           ,step: step
+                           ,branch: branch
+                           ,pair: pair
+                           ,merge: merge
+                           ,first: first
+                           ,second: second
+                           ,combine: combine
+                           ,loop: loop
+                           ,count: count
+                           ,average: average};
+   return _elm.Automaton.values;
 };Elm.Basics = Elm.Basics || {};
 Elm.Basics.make = function (_elm) {
    "use strict";
@@ -1807,24 +2205,70 @@ Elm.Disk.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Disk",
    $Basics = Elm.Basics.make(_elm),
+   $DragAndDrop = Elm.DragAndDrop.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $Svg = Elm.Svg.make(_elm),
-   $Svg$Attributes = Elm.Svg.Attributes.make(_elm),
-   $Svg$Events = Elm.Svg.Events.make(_elm);
+   $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
+   var within = F2(function (point,
+   model) {
+      return function () {
+         var distance = F2(function (point1,
+         point2) {
+            return $Basics.sqrt(Math.pow(point1.x - point2.x,
+            2) + Math.pow(point1.y - point2.y,
+            2));
+         });
+         return _U.cmp(A2(distance,
+         point,
+         model.center),
+         model.radius) < 1;
+      }();
+   });
+   var Unselect = {ctor: "Unselect"};
+   var Select = {ctor: "Select"};
    var Rotate = F2(function (a,b) {
       return {ctor: "Rotate"
              ,_0: a
              ,_1: b};
    });
+   var degreesToRadians = $Basics.degrees;
    var getAngleIndicatorPosition = function (_v0) {
       return function () {
          return {_: {}
-                ,x: _v0.center.x + _v0.radius * $Basics.sin(_v0.angle)
-                ,y: _v0.center.y - _v0.radius * $Basics.cos(_v0.angle)};
+                ,x: _v0.center.x + _v0.radius * $Basics.sin(degreesToRadians(_v0.angle))
+                ,y: _v0.center.y - _v0.radius * $Basics.cos(degreesToRadians(_v0.angle))};
       }();
+   };
+   var view = F2(function (address,
+   model) {
+      return function () {
+         var angleIndicatorPosition = getAngleIndicatorPosition(model);
+         var angleIndicator = A2($Svg.circle,
+         _L.fromArray([$Svg$Attributes.cx($Basics.toString(angleIndicatorPosition.x))
+                      ,$Svg$Attributes.cy($Basics.toString(angleIndicatorPosition.y))
+                      ,$Svg$Attributes.r($Basics.toString(model.radius / 13))
+                      ,$Svg$Attributes.style("fill: #0000FF;")]),
+         _L.fromArray([]));
+         var disk = A2($Svg.circle,
+         _L.fromArray([$Svg$Attributes.cx($Basics.toString(model.center.x))
+                      ,$Svg$Attributes.cy($Basics.toString(model.center.y))
+                      ,$Svg$Attributes.r($Basics.toString(model.radius))
+                      ,$Svg$Attributes.fill("#FFFFFF")
+                      ,$Svg$Attributes.stroke("black")
+                      ,$Svg$Attributes.strokeWidth("1")]),
+         _L.fromArray([]));
+         return A2($Svg.g,
+         _L.fromArray([]),
+         _L.fromArray([disk
+                      ,angleIndicator]));
+      }();
+   });
+   var radiansToDegrees = function (radians) {
+      return radians * 180 / $Basics.pi;
    };
    var update = F2(function (action,
    model) {
@@ -1859,47 +2303,40 @@ Elm.Disk.make = function (_elm) {
                  var newCenter = doRotation(model.center);
                  var getAngleOnDisk = function (_v11) {
                     return function () {
-                       return $Basics.pi / 2 + A2($Basics.atan2,
+                       return radiansToDegrees($Basics.pi / 2 + A2($Basics.atan2,
                        _v11.y - newCenter.y,
-                       _v11.x - newCenter.x);
+                       _v11.x - newCenter.x));
                     }();
                  };
                  var newAngle = getAngleOnDisk(doRotation(getAngleIndicatorPosition(model)));
-                 return _U.replace([["center"
-                                    ,newCenter]
-                                   ,["angle",newAngle]],
+                 var newModel = _U.replace([["center"
+                                            ,newCenter]
+                                           ,["angle",newAngle]],
                  model);
+                 return {ctor: "_Tuple2"
+                        ,_0: newModel
+                        ,_1: $Effects.none};
+              }();
+            case "Select":
+            return function () {
+                 var newModel = _U.replace([["selected"
+                                            ,true]],
+                 model);
+                 return {ctor: "_Tuple2"
+                        ,_0: newModel
+                        ,_1: $Effects.none};
+              }();
+            case "Unselect":
+            return function () {
+                 var newModel = _U.replace([["selected"
+                                            ,false]],
+                 model);
+                 return {ctor: "_Tuple2"
+                        ,_0: newModel
+                        ,_1: $Effects.none};
               }();}
          _U.badCase($moduleName,
-         "between lines 41 and 68");
-      }();
-   });
-   var view = F2(function (address,
-   model) {
-      return function () {
-         var angleIndicatorPosition = getAngleIndicatorPosition(model);
-         var angleIndicator = A2($Svg.circle,
-         _L.fromArray([$Svg$Attributes.cx($Basics.toString(angleIndicatorPosition.x))
-                      ,$Svg$Attributes.cy($Basics.toString(angleIndicatorPosition.y))
-                      ,$Svg$Attributes.r($Basics.toString(model.radius / 13))
-                      ,$Svg$Attributes.style("fill: #0000FF;")]),
-         _L.fromArray([]));
-         var disk = A2($Svg.circle,
-         _L.fromArray([$Svg$Attributes.cx($Basics.toString(model.center.x))
-                      ,$Svg$Attributes.cy($Basics.toString(model.center.y))
-                      ,$Svg$Attributes.r($Basics.toString(model.radius))
-                      ,$Svg$Attributes.fill("#FFFFFF")
-                      ,$Svg$Attributes.stroke("black")
-                      ,$Svg$Attributes.strokeWidth("1")]),
-         _L.fromArray([]));
-         return A2($Svg.g,
-         _L.fromArray([$Svg$Events.onClick(A2($Signal.message,
-         address,
-         A2(Rotate,
-         model.center,
-         $Basics.pi / 2)))]),
-         _L.fromArray([disk
-                      ,angleIndicator]));
+         "between lines 69 and 115");
       }();
    });
    var Point = F2(function (a,b) {
@@ -1907,26 +2344,476 @@ Elm.Disk.make = function (_elm) {
    });
    var init = function (_v13) {
       return function () {
-         return {_: {}
-                ,angle: 0
-                ,center: A2(Point,_v13.x,_v13.y)
-                ,radius: _v13.radius};
+         return function () {
+            var center = A2(Point,
+            _v13.x,
+            _v13.y);
+            var model = {_: {}
+                        ,angle: 0
+                        ,center: center
+                        ,radius: _v13.radius
+                        ,selected: false};
+            return {ctor: "_Tuple2"
+                   ,_0: model
+                   ,_1: $Effects.none};
+         }();
       }();
    };
-   var Model = F3(function (a,
+   var toPoint = function (_v15) {
+      return function () {
+         switch (_v15.ctor)
+         {case "_Tuple2":
+            return A2(Point,
+              $Basics.toFloat(_v15._0),
+              $Basics.toFloat(_v15._1));}
+         _U.badCase($moduleName,
+         "on line 120, column 5 to 33");
+      }();
+   };
+   var mouseEventToDiskAction = F2(function (action,
+   model) {
+      return function () {
+         switch (action.ctor)
+         {case "EndAt":
+            return model.selected ? $Maybe.Just(Unselect) : $Maybe.Nothing;
+            case "MoveFromTo":
+            return model.selected ? function () {
+                 var destinationPoint = toPoint(action._1);
+                 var angle1 = A2($Basics.atan2,
+                 destinationPoint.y - model.center.y,
+                 destinationPoint.x - model.center.x);
+                 var originPoint = toPoint(action._0);
+                 var angle2 = A2($Basics.atan2,
+                 originPoint.y - model.center.y,
+                 originPoint.x - model.center.x);
+                 return $Maybe.Just(A2(Rotate,
+                 model.center,
+                 angle1 - angle2));
+              }() : $Maybe.Nothing;
+            case "StartAt":
+            return function () {
+                 var originPoint = toPoint(action._0);
+                 return A2(within,
+                 originPoint,
+                 model) ? $Maybe.Just(Select) : $Maybe.Nothing;
+              }();}
+         _U.badCase($moduleName,
+         "between lines 133 and 162");
+      }();
+   });
+   var Model = F4(function (a,
    b,
-   c) {
+   c,
+   d) {
       return {_: {}
              ,angle: c
              ,center: a
-             ,radius: b};
+             ,radius: b
+             ,selected: d};
    });
    _elm.Disk.values = {_op: _op
                       ,init: init
                       ,update: update
                       ,view: view
-                      ,Model: Model};
+                      ,mouseEventToDiskAction: mouseEventToDiskAction
+                      ,Model: Model
+                      ,Rotate: Rotate
+                      ,Select: Select
+                      ,Unselect: Unselect};
    return _elm.Disk.values;
+};Elm.DragAndDrop = Elm.DragAndDrop || {};
+Elm.DragAndDrop.make = function (_elm) {
+   "use strict";
+   _elm.DragAndDrop = _elm.DragAndDrop || {};
+   if (_elm.DragAndDrop.values)
+   return _elm.DragAndDrop.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "DragAndDrop",
+   $Automaton = Elm.Automaton.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Mouse = Elm.Mouse.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var Picked = F3(function (a,
+   b,
+   c) {
+      return {ctor: "Picked"
+             ,_0: a
+             ,_1: b
+             ,_2: c};
+   });
+   var Inside = function (a) {
+      return {ctor: "Inside"
+             ,_0: a};
+   };
+   var Outside = {ctor: "Outside"};
+   var Hover = function (a) {
+      return {ctor: "Hover",_0: a};
+   };
+   var Mouse = function (a) {
+      return {ctor: "Mouse",_0: a};
+   };
+   var Release = {ctor: "Release"};
+   var MoveBy = function (a) {
+      return {ctor: "MoveBy"
+             ,_0: a};
+   };
+   var Lift = {ctor: "Lift"};
+   var automatonStep = F2(function (event,
+   old) {
+      return function () {
+         var _v0 = {ctor: "_Tuple2"
+                   ,_0: old
+                   ,_1: event};
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            switch (_v0._0.ctor)
+              {case "Inside":
+                 switch (_v0._1.ctor)
+                   {case "Hover":
+                      return {ctor: "_Tuple2"
+                             ,_0: $Maybe.Nothing
+                             ,_1: A2($Maybe.withDefault,
+                             Outside,
+                             A2($Maybe.map,
+                             Inside,
+                             _v0._1._0))};
+                      case "Mouse":
+                      switch (_v0._1._0.ctor)
+                        {case "StartAt":
+                           return {ctor: "_Tuple2"
+                                  ,_0: $Maybe.Just({ctor: "_Tuple2"
+                                                   ,_0: _v0._0._0
+                                                   ,_1: Lift})
+                                  ,_1: A3(Picked,
+                                  _v0._0._0,
+                                  _v0._1._0._0,
+                                  $Maybe.Nothing)};}
+                        break;}
+                   break;
+                 case "Outside":
+                 switch (_v0._1.ctor)
+                   {case "Hover":
+                      switch (_v0._1._0.ctor)
+                        {case "Just":
+                           return {ctor: "_Tuple2"
+                                  ,_0: $Maybe.Nothing
+                                  ,_1: Inside(_v0._1._0._0)};}
+                        break;}
+                   break;
+                 case "Picked":
+                 switch (_v0._1.ctor)
+                   {case "Hover":
+                      return {ctor: "_Tuple2"
+                             ,_0: $Maybe.Nothing
+                             ,_1: A3(Picked,
+                             _v0._0._0,
+                             _v0._0._1,
+                             _v0._1._0)};
+                      case "Mouse":
+                      switch (_v0._1._0.ctor)
+                        {case "EndAt":
+                           return {ctor: "_Tuple2"
+                                  ,_0: $Maybe.Just({ctor: "_Tuple2"
+                                                   ,_0: _v0._0._0
+                                                   ,_1: Release})
+                                  ,_1: Inside(A2($Maybe.withDefault,
+                                  _v0._0._0,
+                                  _v0._0._2))};
+                           case "MoveFromTo":
+                           return function () {
+                                var $ = _v0._1._0._1,
+                                x$ = $._0,
+                                y$ = $._1;
+                                var $ = _v0._0._1,
+                                x = $._0,
+                                y = $._1;
+                                return {ctor: "_Tuple2"
+                                       ,_0: $Maybe.Just({ctor: "_Tuple2"
+                                                        ,_0: _v0._0._0
+                                                        ,_1: MoveBy({ctor: "_Tuple2"
+                                                                    ,_0: x$ - x
+                                                                    ,_1: y$ - y})})
+                                       ,_1: A3(Picked,
+                                       _v0._0._0,
+                                       _v0._1._0._1,
+                                       _v0._0._2)};
+                             }();}
+                        break;}
+                   break;}
+              break;}
+         return {ctor: "_Tuple2"
+                ,_0: $Maybe.Nothing
+                ,_1: old};
+      }();
+   });
+   var automaton = function (inside) {
+      return A2($Automaton.hiddenState,
+      A2($Maybe.withDefault,
+      Outside,
+      A2($Maybe.map,Inside,inside)),
+      automatonStep);
+   };
+   var EndAt = function (a) {
+      return {ctor: "EndAt",_0: a};
+   };
+   var MoveFromTo = F2(function (a,
+   b) {
+      return {ctor: "MoveFromTo"
+             ,_0: a
+             ,_1: b};
+   });
+   var StartAt = function (a) {
+      return {ctor: "StartAt"
+             ,_0: a};
+   };
+   var mouseEvents = function () {
+      var isJust = function (b) {
+         return function () {
+            switch (b.ctor)
+            {case "Just": return true;
+               case "Nothing": return false;}
+            _U.badCase($moduleName,
+            "between lines 38 and 41");
+         }();
+      };
+      var assertEqual = $Basics.always;
+      var f = F2(function (_v19,old) {
+         return function () {
+            switch (_v19.ctor)
+            {case "_Tuple2":
+               return function () {
+                    var _v23 = {ctor: "_Tuple2"
+                               ,_0: old
+                               ,_1: _v19._0};
+                    switch (_v23.ctor)
+                    {case "_Tuple2":
+                       switch (_v23._0.ctor)
+                         {case "Just":
+                            switch (_v23._0._0.ctor)
+                              {case "MoveFromTo":
+                                 switch (_v23._1)
+                                   {case true:
+                                      return $Maybe.Just(A2(MoveFromTo,
+                                        _v23._0._0._1,
+                                        _v19._1));}
+                                   return $Maybe.Just(EndAt(A2(assertEqual,
+                                   _v23._0._0._1,
+                                   _v19._1)));
+                                 case "StartAt": switch (_v23._1)
+                                   {case true:
+                                      return $Maybe.Just(A2(MoveFromTo,
+                                        _v23._0._0._0,
+                                        _v19._1));}
+                                   return $Maybe.Just(EndAt(A2(assertEqual,
+                                   _v23._0._0._0,
+                                   _v19._1)));}
+                              break;}
+                         switch (_v23._1)
+                         {case true:
+                            return $Maybe.Just(StartAt(_v19._1));}
+                         break;}
+                    return $Maybe.Nothing;
+                 }();}
+            _U.badCase($moduleName,
+            "between lines 31 and 38");
+         }();
+      });
+      return A2($Signal._op["<~"],
+      $Maybe.withDefault(EndAt({ctor: "_Tuple2"
+                               ,_0: 0
+                               ,_1: 0})),
+      A2($Signal.filter,
+      isJust,
+      $Maybe.Nothing)(A2($Signal.foldp,
+      f,
+      $Maybe.Nothing)(A3($Signal.map2,
+      F2(function (v0,v1) {
+         return {ctor: "_Tuple2"
+                ,_0: v0
+                ,_1: v1};
+      }),
+      $Mouse.isDown,
+      $Mouse.position))));
+   }();
+   var trackMany = F2(function (inside,
+   hover) {
+      return A3($Automaton.run,
+      automaton(inside),
+      $Maybe.Nothing,
+      A2($Signal.merge,
+      A2($Signal._op["<~"],
+      Mouse,
+      mouseEvents),
+      A2($Signal._op["<~"],
+      Hover,
+      hover)));
+   });
+   var track = F2(function (inside,
+   hover) {
+      return function () {
+         var btm = function (b) {
+            return b ? $Maybe.Just({ctor: "_Tuple0"}) : $Maybe.Nothing;
+         };
+         return A2($Signal.map,
+         $Maybe.map($Basics.snd),
+         A2(trackMany,
+         btm(inside),
+         A2($Signal._op["<~"],
+         btm,
+         hover)));
+      }();
+   });
+   _elm.DragAndDrop.values = {_op: _op
+                             ,mouseEvents: mouseEvents
+                             ,track: track
+                             ,trackMany: trackMany
+                             ,automaton: automaton
+                             ,StartAt: StartAt
+                             ,MoveFromTo: MoveFromTo
+                             ,EndAt: EndAt
+                             ,Lift: Lift
+                             ,MoveBy: MoveBy
+                             ,Release: Release
+                             ,Mouse: Mouse
+                             ,Hover: Hover};
+   return _elm.DragAndDrop.values;
+};Elm.Effects = Elm.Effects || {};
+Elm.Effects.make = function (_elm) {
+   "use strict";
+   _elm.Effects = _elm.Effects || {};
+   if (_elm.Effects.values)
+   return _elm.Effects.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Effects",
+   $Basics = Elm.Basics.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Native$Effects = Elm.Native.Effects.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var ignore = function (task) {
+      return A2($Task.map,
+      $Basics.always({ctor: "_Tuple0"}),
+      task);
+   };
+   var requestTickSending = $Native$Effects.requestTickSending;
+   var toTaskHelp = F3(function (address,
+   effect,
+   _v0) {
+      return function () {
+         switch (_v0.ctor)
+         {case "_Tuple2":
+            return function () {
+                 switch (effect.ctor)
+                 {case "Batch":
+                    return A3($List.foldl,
+                      toTaskHelp(address),
+                      _v0,
+                      effect._0);
+                    case "None": return _v0;
+                    case "Task":
+                    return function () {
+                         var reporter = A2($Task.andThen,
+                         effect._0,
+                         function (answer) {
+                            return A2($Signal.send,
+                            address,
+                            _L.fromArray([answer]));
+                         });
+                         return {ctor: "_Tuple2"
+                                ,_0: A2($Task.andThen,
+                                _v0._0,
+                                $Basics.always(ignore($Task.spawn(reporter))))
+                                ,_1: _v0._1};
+                      }();
+                    case "Tick":
+                    return {ctor: "_Tuple2"
+                           ,_0: _v0._0
+                           ,_1: A2($List._op["::"],
+                           effect._0,
+                           _v0._1)};}
+                 _U.badCase($moduleName,
+                 "between lines 184 and 203");
+              }();}
+         _U.badCase($moduleName,
+         "between lines 184 and 203");
+      }();
+   });
+   var toTask = F2(function (address,
+   effect) {
+      return function () {
+         var $ = A3(toTaskHelp,
+         address,
+         effect,
+         {ctor: "_Tuple2"
+         ,_0: $Task.succeed({ctor: "_Tuple0"})
+         ,_1: _L.fromArray([])}),
+         combinedTask = $._0,
+         tickMessages = $._1;
+         return $List.isEmpty(tickMessages) ? combinedTask : A2($Task.andThen,
+         combinedTask,
+         $Basics.always(A2(requestTickSending,
+         address,
+         tickMessages)));
+      }();
+   });
+   var Never = function (a) {
+      return {ctor: "Never",_0: a};
+   };
+   var Batch = function (a) {
+      return {ctor: "Batch",_0: a};
+   };
+   var batch = Batch;
+   var None = {ctor: "None"};
+   var none = None;
+   var Tick = function (a) {
+      return {ctor: "Tick",_0: a};
+   };
+   var tick = Tick;
+   var Task = function (a) {
+      return {ctor: "Task",_0: a};
+   };
+   var task = Task;
+   var map = F2(function (func,
+   effect) {
+      return function () {
+         switch (effect.ctor)
+         {case "Batch":
+            return Batch(A2($List.map,
+              map(func),
+              effect._0));
+            case "None": return None;
+            case "Task":
+            return Task(A2($Task.map,
+              func,
+              effect._0));
+            case "Tick":
+            return Tick(function ($) {
+                 return func(effect._0($));
+              });}
+         _U.badCase($moduleName,
+         "between lines 136 and 147");
+      }();
+   });
+   _elm.Effects.values = {_op: _op
+                         ,none: none
+                         ,task: task
+                         ,tick: tick
+                         ,map: map
+                         ,batch: batch
+                         ,toTask: toTask};
+   return _elm.Effects.values;
 };Elm.Equitorium = Elm.Equitorium || {};
 Elm.Equitorium.make = function (_elm) {
    "use strict";
@@ -1940,6 +2827,8 @@ Elm.Equitorium.make = function (_elm) {
    $moduleName = "Equitorium",
    $Basics = Elm.Basics.make(_elm),
    $Disk = Elm.Disk.make(_elm),
+   $DragAndDrop = Elm.DragAndDrop.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
@@ -1972,12 +2861,35 @@ Elm.Equitorium.make = function (_elm) {
                       _v0.epicycle)]));
       }();
    });
-   var init = $Basics.identity;
+   var MouseEvent = function (a) {
+      return {ctor: "MouseEvent"
+             ,_0: a};
+   };
+   var inputs = _L.fromArray([A2($Signal.map,
+   MouseEvent,
+   $DragAndDrop.mouseEvents)]);
    var Model = F2(function (a,b) {
       return {_: {}
              ,deferent: a
              ,epicycle: b};
    });
+   var init = function () {
+      var $ = $Disk.init({_: {}
+                         ,radius: 50
+                         ,x: 250
+                         ,y: 200}),
+      epicycle = $._0,
+      epicycleFx = $._1;
+      var $ = $Disk.init({_: {}
+                         ,radius: 125
+                         ,x: 250
+                         ,y: 250}),
+      deferent = $._0,
+      deferentFx = $._1;
+      return {ctor: "_Tuple2"
+             ,_0: A2(Model,deferent,epicycle)
+             ,_1: $Effects.none};
+   }();
    var update = F2(function (action,
    _v2) {
       return function () {
@@ -1985,27 +2897,73 @@ Elm.Equitorium.make = function (_elm) {
             switch (action.ctor)
             {case "Deferent":
                return function () {
-                    var newEpicycle = A2($Disk.update,
+                    var $ = A2($Disk.update,
                     action._0,
-                    _v2.epicycle);
-                    var newDeferent = A2($Disk.update,
+                    _v2.epicycle),
+                    newEpicycle = $._0,
+                    epicycleFx = $._1;
+                    var $ = A2($Disk.update,
                     action._0,
-                    _v2.deferent);
-                    return A2(Model,
-                    newDeferent,
-                    newEpicycle);
+                    _v2.deferent),
+                    newDeferent = $._0,
+                    deferentFx = $._1;
+                    return function () {
+                       switch (action._0.ctor)
+                       {case "Rotate":
+                          return {ctor: "_Tuple2"
+                                 ,_0: A2(Model,
+                                 newDeferent,
+                                 newEpicycle)
+                                 ,_1: $Effects.none};}
+                       return {ctor: "_Tuple2"
+                              ,_0: A2(Model,
+                              newDeferent,
+                              _v2.epicycle)
+                              ,_1: $Effects.none};
+                    }();
                  }();
                case "Epicycle":
                return function () {
-                    var newEpicycle = A2($Disk.update,
+                    var $ = A2($Disk.update,
                     action._0,
-                    _v2.epicycle);
-                    return A2(Model,
-                    _v2.deferent,
-                    newEpicycle);
+                    _v2.epicycle),
+                    newEpicycle = $._0,
+                    epicycleFx = $._1;
+                    return {ctor: "_Tuple2"
+                           ,_0: A2(Model,
+                           _v2.deferent,
+                           newEpicycle)
+                           ,_1: $Effects.none};
+                 }();
+               case "MouseEvent":
+               return function () {
+                    var deferentAction = $Maybe.map(Deferent)(A2($Disk.mouseEventToDiskAction,
+                    action._0,
+                    _v2.deferent));
+                    var epicycleAction = $Maybe.map(Epicycle)(A2($Disk.mouseEventToDiskAction,
+                    action._0,
+                    _v2.epicycle));
+                    return function () {
+                       var _v11 = $Maybe.oneOf(_L.fromArray([epicycleAction
+                                                            ,deferentAction]));
+                       switch (_v11.ctor)
+                       {case "Just": return A2(update,
+                            _v11._0,
+                            A2(Model,
+                            _v2.deferent,
+                            _v2.epicycle));
+                          case "Nothing":
+                          return {ctor: "_Tuple2"
+                                 ,_0: A2(Model,
+                                 _v2.deferent,
+                                 _v2.epicycle)
+                                 ,_1: $Effects.none};}
+                       _U.badCase($moduleName,
+                       "between lines 46 and 53");
+                    }();
                  }();}
             _U.badCase($moduleName,
-            "between lines 27 and 38");
+            "between lines 38 and 73");
          }();
       }();
    });
@@ -2013,6 +2971,7 @@ Elm.Equitorium.make = function (_elm) {
                             ,init: init
                             ,update: update
                             ,view: view
+                            ,inputs: inputs
                             ,Model: Model};
    return _elm.Equitorium.values;
 };Elm.Graphics = Elm.Graphics || {};
@@ -2901,6 +3860,36 @@ Elm.Graphics.Element.make = function (_elm) {
                                   ,Element: Element
                                   ,Position: Position};
    return _elm.Graphics.Element.values;
+};Elm.Graphics = Elm.Graphics || {};
+Elm.Graphics.Input = Elm.Graphics.Input || {};
+Elm.Graphics.Input.make = function (_elm) {
+   "use strict";
+   _elm.Graphics = _elm.Graphics || {};
+   _elm.Graphics.Input = _elm.Graphics.Input || {};
+   if (_elm.Graphics.Input.values)
+   return _elm.Graphics.Input.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Graphics.Input",
+   $Graphics$Element = Elm.Graphics.Element.make(_elm),
+   $Native$Graphics$Input = Elm.Native.Graphics.Input.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clickable = $Native$Graphics$Input.clickable;
+   var hoverable = $Native$Graphics$Input.hoverable;
+   var dropDown = $Native$Graphics$Input.dropDown;
+   var checkbox = $Native$Graphics$Input.checkbox;
+   var customButton = $Native$Graphics$Input.customButton;
+   var button = $Native$Graphics$Input.button;
+   _elm.Graphics.Input.values = {_op: _op
+                                ,button: button
+                                ,customButton: customButton
+                                ,checkbox: checkbox
+                                ,dropDown: dropDown
+                                ,hoverable: hoverable
+                                ,clickable: clickable};
+   return _elm.Graphics.Input.values;
 };Elm.Html = Elm.Html || {};
 Elm.Html.make = function (_elm) {
    "use strict";
@@ -3639,26 +4628,20 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
-   $Disk = Elm.Disk.make(_elm),
    $Equitorium = Elm.Equitorium.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
-   $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
-   var main = $StartApp$Simple.start({_: {}
-                                     ,model: $Equitorium.init({_: {}
-                                                              ,deferent: $Disk.init({_: {}
-                                                                                    ,radius: 125
-                                                                                    ,x: 250
-                                                                                    ,y: 250})
-                                                              ,epicycle: $Disk.init({_: {}
-                                                                                    ,radius: 50
-                                                                                    ,x: 250
-                                                                                    ,y: 200})})
-                                     ,update: $Equitorium.update
-                                     ,view: $Equitorium.view});
+   $StartApp = Elm.StartApp.make(_elm);
+   var app = $StartApp.start({_: {}
+                             ,init: $Equitorium.init
+                             ,inputs: $Equitorium.inputs
+                             ,update: $Equitorium.update
+                             ,view: $Equitorium.view});
+   var main = app.html;
    _elm.Main.values = {_op: _op
+                      ,app: app
                       ,main: main};
    return _elm.Main.values;
 };Elm.Maybe = Elm.Maybe || {};
@@ -3733,6 +4716,36 @@ Elm.Maybe.make = function (_elm) {
                        ,Just: Just
                        ,Nothing: Nothing};
    return _elm.Maybe.values;
+};Elm.Mouse = Elm.Mouse || {};
+Elm.Mouse.make = function (_elm) {
+   "use strict";
+   _elm.Mouse = _elm.Mouse || {};
+   if (_elm.Mouse.values)
+   return _elm.Mouse.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Mouse",
+   $Basics = Elm.Basics.make(_elm),
+   $Native$Mouse = Elm.Native.Mouse.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var clicks = $Native$Mouse.clicks;
+   var isDown = $Native$Mouse.isDown;
+   var position = $Native$Mouse.position;
+   var x = A2($Signal.map,
+   $Basics.fst,
+   position);
+   var y = A2($Signal.map,
+   $Basics.snd,
+   position);
+   _elm.Mouse.values = {_op: _op
+                       ,position: position
+                       ,x: x
+                       ,y: y
+                       ,isDown: isDown
+                       ,clicks: clicks};
+   return _elm.Mouse.values;
 };Elm.Native.Array = {};
 Elm.Native.Array.make = function(localRuntime) {
 
@@ -4976,6 +5989,146 @@ Elm.Native.Debug.make = function(localRuntime) {
 		watch: F2(watch),
 		watchSummary:F3(watchSummary),
 	};
+};
+Elm.Native.Effects = {};
+Elm.Native.Effects.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Effects = localRuntime.Native.Effects || {};
+	if (localRuntime.Native.Effects.values)
+	{
+		return localRuntime.Native.Effects.values;
+	}
+
+	var Task = Elm.Native.Task.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+	var Signal = Elm.Signal.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+
+
+	// polyfill so things will work even if rAF is not available for some reason
+	var _requestAnimationFrame =
+		typeof requestAnimationFrame !== 'undefined'
+			? requestAnimationFrame
+			: function(cb) { setTimeout(cb, 1000 / 60); }
+			;
+
+
+	// batchedSending and sendCallback implement a small state machine in order
+	// to schedule only one send(time) call per animation frame.
+	//
+	// Invariants:
+	// 1. In the NO_REQUEST state, there is never a scheduled sendCallback.
+	// 2. In the PENDING_REQUEST and EXTRA_REQUEST states, there is always exactly
+	//    one scheduled sendCallback.
+	var NO_REQUEST = 0;
+	var PENDING_REQUEST = 1;
+	var EXTRA_REQUEST = 2;
+	var state = NO_REQUEST;
+	var messageArray = [];
+
+
+	function batchedSending(address, tickMessages)
+	{
+		// insert ticks into the messageArray
+		var foundAddress = false;
+
+		for (var i = messageArray.length; i--; )
+		{
+			if (messageArray[i].address === address)
+			{
+				foundAddress = true;
+				messageArray[i].tickMessages = A3(List.foldl, List.cons, messageArray[i].tickMessages, tickMessages);
+				break;
+			}
+		}
+
+		if (!foundAddress)
+		{
+			messageArray.push({ address: address, tickMessages: tickMessages });
+		}
+
+		// do the appropriate state transition
+		switch (state)
+		{
+			case NO_REQUEST:
+				_requestAnimationFrame(sendCallback);
+				state = PENDING_REQUEST;
+				break;
+			case PENDING_REQUEST:
+				state = PENDING_REQUEST;
+				break;
+			case EXTRA_REQUEST:
+				state = PENDING_REQUEST;
+				break;
+		}
+	}
+
+
+	function sendCallback(time)
+	{
+		switch (state)
+		{
+			case NO_REQUEST:
+				// This state should not be possible. How can there be no
+				// request, yet somehow we are actively fulfilling a
+				// request?
+				throw new Error(
+					'Unexpected send callback.\n' +
+					'Please report this to <https://github.com/evancz/elm-effects/issues>.'
+				);
+
+			case PENDING_REQUEST:
+				// At this point, we do not *know* that another frame is
+				// needed, but we make an extra request to rAF just in
+				// case. It's possible to drop a frame if rAF is called
+				// too late, so we just do it preemptively.
+				_requestAnimationFrame(sendCallback);
+				state = EXTRA_REQUEST;
+
+				// There's also stuff we definitely need to send.
+				send(time);
+				return;
+
+			case EXTRA_REQUEST:
+				// Turns out the extra request was not needed, so we will
+				// stop calling rAF. No reason to call it all the time if
+				// no one needs it.
+				state = NO_REQUEST;
+				return;
+		}
+	}
+
+
+	function send(time)
+	{
+		for (var i = messageArray.length; i--; )
+		{
+			var messages = A3(
+				List.foldl,
+				F2( function(toAction, list) { return List.Cons(toAction(time), list); } ),
+				List.Nil,
+				messageArray[i].tickMessages
+			);
+			Task.perform( A2(Signal.send, messageArray[i].address, messages) );
+		}
+		messageArray = [];
+	}
+
+
+	function requestTickSending(address, tickMessages)
+	{
+		return Task.asyncFunction(function(callback) {
+			batchedSending(address, tickMessages);
+			callback(Task.succeed(Utils.Tuple0));
+		});
+	}
+
+
+	return localRuntime.Native.Effects.values = {
+		requestTickSending: F2(requestTickSending)
+	};
+
 };
 
 // setup
@@ -6352,6 +7505,478 @@ Elm.Native.Graphics.Element.make = function(localRuntime) {
 	};
 
 };
+// setup
+Elm.Native = Elm.Native || {};
+Elm.Native.Graphics = Elm.Native.Graphics || {};
+Elm.Native.Graphics.Input = Elm.Native.Graphics.Input || {};
+
+// definition
+Elm.Native.Graphics.Input.make = function(localRuntime) {
+	'use strict';
+
+	// attempt to short-circuit
+	if ('values' in Elm.Native.Graphics.Input) {
+		return Elm.Native.Graphics.Input.values;
+	}
+
+	var Color = Elm.Native.Color.make(localRuntime);
+	var List = Elm.Native.List.make(localRuntime);
+	var Signal = Elm.Native.Signal.make(localRuntime);
+	var Text = Elm.Native.Text.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+	var Element = Elm.Native.Graphics.Element.make(localRuntime);
+
+
+	function renderDropDown(model)
+	{
+		var drop = Element.createNode('select');
+		drop.style.border = '0 solid';
+		drop.style.pointerEvents = 'auto';
+		drop.style.display = 'block';
+
+		drop.elm_values = List.toArray(model.values);
+		drop.elm_handler = model.handler;
+		var values = drop.elm_values;
+
+		for (var i = 0; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			drop.appendChild(option);
+		}
+		drop.addEventListener('change', function() {
+			Signal.sendMessage(drop.elm_handler(drop.elm_values[drop.selectedIndex]._1));
+		});
+
+		return drop;
+	}
+
+	function updateDropDown(node, oldModel, newModel)
+	{
+		node.elm_values = List.toArray(newModel.values);
+		node.elm_handler = newModel.handler;
+
+		var values = node.elm_values;
+		var kids = node.childNodes;
+		var kidsLength = kids.length;
+
+		var i = 0;
+		for (; i < kidsLength && i < values.length; ++i)
+		{
+			var option = kids[i];
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+		}
+		for (; i < kidsLength; ++i)
+		{
+			node.removeChild(node.lastChild);
+		}
+		for (; i < values.length; ++i)
+		{
+			var option = Element.createNode('option');
+			var name = values[i]._0;
+			option.value = name;
+			option.innerHTML = name;
+			node.appendChild(option);
+		}
+		return node;
+	}
+
+	function dropDown(handler, values)
+	{
+		return A3(Element.newElement, 100, 24, {
+			ctor: 'Custom',
+			type: 'DropDown',
+			render: renderDropDown,
+			update: updateDropDown,
+			model: {
+				values: values,
+				handler: handler
+			}
+		});
+	}
+
+	function renderButton(model)
+	{
+		var node = Element.createNode('button');
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_message = model.message;
+		function click()
+		{
+			Signal.sendMessage(node.elm_message);
+		}
+		node.addEventListener('click', click);
+		node.innerHTML = model.text;
+		return node;
+	}
+
+	function updateButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+		var txt = newModel.text;
+		if (oldModel.text !== txt)
+		{
+			node.innerHTML = txt;
+		}
+		return node;
+	}
+
+	function button(message, text)
+	{
+		return A3(Element.newElement, 100, 40, {
+			ctor: 'Custom',
+			type: 'Button',
+			render: renderButton,
+			update: updateButton,
+			model: {
+				message: message,
+				text:text
+			}
+		});
+	}
+
+	function renderCustomButton(model)
+	{
+		var btn = Element.createNode('div');
+		btn.style.pointerEvents = 'auto';
+		btn.elm_message = model.message;
+
+		btn.elm_up    = Element.render(model.up);
+		btn.elm_hover = Element.render(model.hover);
+		btn.elm_down  = Element.render(model.down);
+
+		btn.elm_up.style.display = 'block';
+		btn.elm_hover.style.display = 'none';
+		btn.elm_down.style.display = 'none';
+
+		btn.appendChild(btn.elm_up);
+		btn.appendChild(btn.elm_hover);
+		btn.appendChild(btn.elm_down);
+
+		function swap(visibleNode, hiddenNode1, hiddenNode2)
+		{
+			visibleNode.style.display = 'block';
+			hiddenNode1.style.display = 'none';
+			hiddenNode2.style.display = 'none';
+		}
+
+		var overCount = 0;
+		function over(e)
+		{
+			if (overCount++ > 0) return;
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+		}
+		function out(e)
+		{
+			if (btn.contains(e.toElement || e.relatedTarget)) return;
+			overCount = 0;
+			swap(btn.elm_up, btn.elm_down, btn.elm_hover);
+		}
+		function up()
+		{
+			swap(btn.elm_hover, btn.elm_down, btn.elm_up);
+			Signal.sendMessage(btn.elm_message);
+		}
+		function down()
+		{
+			swap(btn.elm_down, btn.elm_hover, btn.elm_up);
+		}
+
+		btn.addEventListener('mouseover', over);
+		btn.addEventListener('mouseout' , out);
+		btn.addEventListener('mousedown', down);
+		btn.addEventListener('mouseup'  , up);
+
+		return btn;
+	}
+
+	function updateCustomButton(node, oldModel, newModel)
+	{
+		node.elm_message = newModel.message;
+
+		var kids = node.childNodes;
+		var styleUp    = kids[0].style.display;
+		var styleHover = kids[1].style.display;
+		var styleDown  = kids[2].style.display;
+
+		Element.updateAndReplace(kids[0], oldModel.up, newModel.up);
+		Element.updateAndReplace(kids[1], oldModel.hover, newModel.hover);
+		Element.updateAndReplace(kids[2], oldModel.down, newModel.down);
+
+		var kids = node.childNodes;
+		kids[0].style.display = styleUp;
+		kids[1].style.display = styleHover;
+		kids[2].style.display = styleDown;
+
+		return node;
+	}
+
+	function max3(a,b,c)
+	{
+		var ab = a > b ? a : b;
+		return ab > c ? ab : c;
+	}
+
+	function customButton(message, up, hover, down)
+	{
+		return A3(Element.newElement,
+				  max3(up.props.width, hover.props.width, down.props.width),
+				  max3(up.props.height, hover.props.height, down.props.height),
+				  { ctor: 'Custom',
+					type: 'CustomButton',
+					render: renderCustomButton,
+					update: updateCustomButton,
+					model: {
+						message: message,
+						up: up,
+						hover: hover,
+						down: down
+					}
+				  });
+	}
+
+	function renderCheckbox(model)
+	{
+		var node = Element.createNode('input');
+		node.type = 'checkbox';
+		node.checked = model.checked;
+		node.style.display = 'block';
+		node.style.pointerEvents = 'auto';
+		node.elm_handler = model.handler;
+		function change()
+		{
+			Signal.sendMessage(node.elm_handler(node.checked));
+		}
+		node.addEventListener('change', change);
+		return node;
+	}
+
+	function updateCheckbox(node, oldModel, newModel)
+	{
+		node.elm_handler = newModel.handler;
+		node.checked = newModel.checked;
+		return node;
+	}
+
+	function checkbox(handler, checked)
+	{
+		return A3(Element.newElement, 13, 13, {
+			ctor: 'Custom',
+			type: 'CheckBox',
+			render: renderCheckbox,
+			update: updateCheckbox,
+			model: { handler:handler, checked:checked }
+		});
+	}
+
+	function setRange(node, start, end, dir)
+	{
+		if (node.parentNode)
+		{
+			node.setSelectionRange(start, end, dir);
+		}
+		else
+		{
+			setTimeout(function(){node.setSelectionRange(start, end, dir);}, 0);
+		}
+	}
+
+	function updateIfNeeded(css, attribute, latestAttribute)
+	{
+		if (css[attribute] !== latestAttribute)
+		{
+			css[attribute] = latestAttribute;
+		}
+	}
+	function cssDimensions(dimensions)
+	{
+		return dimensions.top    + 'px ' +
+			   dimensions.right  + 'px ' +
+			   dimensions.bottom + 'px ' +
+			   dimensions.left   + 'px';
+	}
+	function updateFieldStyle(css, style)
+	{
+		updateIfNeeded(css, 'padding', cssDimensions(style.padding));
+
+		var outline = style.outline;
+		updateIfNeeded(css, 'border-width', cssDimensions(outline.width));
+		updateIfNeeded(css, 'border-color', Color.toCss(outline.color));
+		updateIfNeeded(css, 'border-radius', outline.radius + 'px');
+
+		var highlight = style.highlight;
+		if (highlight.width === 0)
+		{
+			css.outline = 'none';
+		}
+		else
+		{
+			updateIfNeeded(css, 'outline-width', highlight.width + 'px');
+			updateIfNeeded(css, 'outline-color', Color.toCss(highlight.color));
+		}
+
+		var textStyle = style.style;
+		updateIfNeeded(css, 'color', Color.toCss(textStyle.color));
+		if (textStyle.typeface.ctor !== '[]')
+		{
+			updateIfNeeded(css, 'font-family', Text.toTypefaces(textStyle.typeface));
+		}
+		if (textStyle.height.ctor !== "Nothing")
+		{
+			updateIfNeeded(css, 'font-size', textStyle.height._0 + 'px');
+		}
+		updateIfNeeded(css, 'font-weight', textStyle.bold ? 'bold' : 'normal');
+		updateIfNeeded(css, 'font-style', textStyle.italic ? 'italic' : 'normal');
+		if (textStyle.line.ctor !== 'Nothing')
+		{
+			updateIfNeeded(css, 'text-decoration', Text.toLine(textStyle.line._0));
+		}
+	}
+
+	function renderField(model)
+	{
+		var field = Element.createNode('input');
+		updateFieldStyle(field.style, model.style);
+		field.style.borderStyle = 'solid';
+		field.style.pointerEvents = 'auto';
+
+		field.type = model.type;
+		field.placeholder = model.placeHolder;
+		field.value = model.content.string;
+
+		field.elm_handler = model.handler;
+		field.elm_old_value = field.value;
+
+		function inputUpdate(event)
+		{
+			var curr = field.elm_old_value;
+			var next = field.value;
+			if (curr === next)
+			{
+				return;
+			}
+
+			var direction = field.selectionDirection === 'forward' ? 'Forward' : 'Backward';
+			var start = field.selectionStart;
+			var end = field.selectionEnd;
+			field.value = field.elm_old_value;
+
+			Signal.sendMessage(field.elm_handler({
+				_:{},
+				string: next,
+				selection: {
+					_:{},
+					start: start,
+					end: end,
+					direction: { ctor: direction }
+				}
+			}));
+		}
+
+		field.addEventListener('input', inputUpdate);
+		field.addEventListener('focus', function() {
+			field.elm_hasFocus = true;
+		});
+		field.addEventListener('blur', function() {
+			field.elm_hasFocus = false;
+		});
+
+		return field;
+	}
+
+	function updateField(field, oldModel, newModel)
+	{
+		if (oldModel.style !== newModel.style)
+		{
+			updateFieldStyle(field.style, newModel.style);
+		}
+		field.elm_handler = newModel.handler;
+
+		field.type = newModel.type;
+		field.placeholder = newModel.placeHolder;
+		var value = newModel.content.string;
+		field.value = value;
+		field.elm_old_value = value;
+		if (field.elm_hasFocus)
+		{
+			var selection = newModel.content.selection;
+			var direction = selection.direction.ctor === 'Forward' ? 'forward' : 'backward';
+			setRange(field, selection.start, selection.end, direction);
+		}
+		return field;
+	}
+
+	function mkField(type)
+	{
+		function field(style, handler, placeHolder, content)
+		{
+			var padding = style.padding;
+			var outline = style.outline.width;
+			var adjustWidth = padding.left + padding.right + outline.left + outline.right;
+			var adjustHeight = padding.top + padding.bottom + outline.top + outline.bottom;
+			return A3(Element.newElement, 200, 30, {
+				ctor: 'Custom',
+				type: type + 'Field',
+				adjustWidth: adjustWidth,
+				adjustHeight: adjustHeight,
+				render: renderField,
+				update: updateField,
+				model: {
+					handler:handler,
+					placeHolder:placeHolder,
+					content:content,
+					style:style,
+					type:type
+				}
+			});
+		}
+		return F4(field);
+	}
+
+	function hoverable(handler, elem)
+	{
+		function onHover(bool)
+		{
+			Signal.sendMessage(handler(bool));
+		}
+		var props = Utils.replace([['hover',onHover]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	function clickable(message, elem)
+	{
+		function onClick()
+		{
+			Signal.sendMessage(message);
+		}
+		var props = Utils.replace([['click',onClick]], elem.props);
+		return {
+			props: props,
+			element: elem.element
+		};
+	}
+
+	return Elm.Native.Graphics.Input.values = {
+		button: F2(button),
+		customButton: F4(customButton),
+		checkbox: F2(checkbox),
+		dropDown: F2(dropDown),
+		field: mkField('text'),
+		email: mkField('email'),
+		password: mkField('password'),
+		hoverable: F2(hoverable),
+		clickable: F2(clickable)
+	};
+
+};
 Elm.Native.Json = {};
 Elm.Native.Json.make = function(localRuntime) {
 
@@ -7062,6 +8687,49 @@ Elm.Native.List.make = function(localRuntime) {
 	};
 	return localRuntime.Native.List.values = Elm.Native.List.values;
 
+};
+Elm.Native = Elm.Native || {};
+Elm.Native.Mouse = {};
+Elm.Native.Mouse.make = function(localRuntime) {
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Mouse = localRuntime.Native.Mouse || {};
+	if (localRuntime.Native.Mouse.values)
+	{
+		return localRuntime.Native.Mouse.values;
+	}
+
+	var NS = Elm.Native.Signal.make(localRuntime);
+	var Utils = Elm.Native.Utils.make(localRuntime);
+
+	var position = NS.input('Mouse.position', Utils.Tuple2(0,0));
+
+	var isDown = NS.input('Mouse.isDown', false);
+
+	var clicks = NS.input('Mouse.clicks', Utils.Tuple0);
+
+	var node = localRuntime.isFullscreen()
+		? document
+		: localRuntime.node;
+
+	localRuntime.addListener([clicks.id], node, 'click', function click() {
+		localRuntime.notify(clicks.id, Utils.Tuple0);
+	});
+	localRuntime.addListener([isDown.id], node, 'mousedown', function down() {
+		localRuntime.notify(isDown.id, true);
+	});
+	localRuntime.addListener([isDown.id], node, 'mouseup', function up() {
+		localRuntime.notify(isDown.id, false);
+	});
+	localRuntime.addListener([position.id], node, 'mousemove', function move(e) {
+		localRuntime.notify(position.id, Utils.getXY(e));
+	});
+
+	return localRuntime.Native.Mouse.values = {
+		position: position,
+		isDown: isDown,
+		clicks: clicks
+	};
 };
 Elm.Native.Port = {};
 Elm.Native.Port.make = function(localRuntime) {
@@ -9348,6 +11016,116 @@ Elm.Native.Text.make = function(localRuntime) {
 		toLine: toLine,
 		renderHtml: renderHtml
 	};
+};
+Elm.Native.Time = {};
+Elm.Native.Time.make = function(localRuntime)
+{
+
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Time = localRuntime.Native.Time || {};
+	if (localRuntime.Native.Time.values)
+	{
+		return localRuntime.Native.Time.values;
+	}
+
+	var NS = Elm.Native.Signal.make(localRuntime);
+	var Maybe = Elm.Maybe.make(localRuntime);
+
+
+	// FRAMES PER SECOND
+
+	function fpsWhen(desiredFPS, isOn)
+	{
+		var msPerFrame = 1000 / desiredFPS;
+		var ticker = NS.input('fps-' + desiredFPS, null);
+
+		function notifyTicker()
+		{
+			localRuntime.notify(ticker.id, null);
+		}
+
+		function firstArg(x, y)
+		{
+			return x;
+		}
+
+		// input fires either when isOn changes, or when ticker fires.
+		// Its value is a tuple with the current timestamp, and the state of isOn
+		var input = NS.timestamp(A3(NS.map2, F2(firstArg), NS.dropRepeats(isOn), ticker));
+
+		var initialState = {
+			isOn: false,
+			time: localRuntime.timer.programStart,
+			delta: 0
+		};
+
+		var timeoutId;
+
+		function update(input,state)
+		{
+			var currentTime = input._0;
+			var isOn = input._1;
+			var wasOn = state.isOn;
+			var previousTime = state.time;
+
+			if (isOn)
+			{
+				timeoutId = localRuntime.setTimeout(notifyTicker, msPerFrame);
+			}
+			else if (wasOn)
+			{
+				clearTimeout(timeoutId);
+			}
+
+			return {
+				isOn: isOn,
+				time: currentTime,
+				delta: (isOn && !wasOn) ? 0 : currentTime - previousTime
+			};
+		}
+
+		return A2(
+			NS.map,
+			function(state) { return state.delta; },
+			A3(NS.foldp, F2(update), update(input.value,initialState), input)
+		);
+	}
+
+
+	// EVERY
+
+	function every(t)
+	{
+		var ticker = NS.input('every-' + t, null);
+		function tellTime()
+		{
+			localRuntime.notify(ticker.id, null);
+		}
+		var clock = A2( NS.map, fst, NS.timestamp(ticker) );
+		setInterval(tellTime, t);
+		return clock;
+	}
+
+
+	function fst(pair)
+	{
+		return pair._0;
+	}
+
+
+	function read(s)
+	{
+		var t = Date.parse(s);
+		return isNaN(t) ? Maybe.Nothing : Maybe.Just(t);
+	}
+
+	return localRuntime.Native.Time.values = {
+		fpsWhen: F2(fpsWhen),
+		every: every,
+		toDate: function(t) { return new window.Date(t); },
+		read: read
+	};
+
 };
 Elm.Native.Transform2D = {};
 Elm.Native.Transform2D.make = function(localRuntime) {
@@ -11804,61 +13582,113 @@ Elm.Signal.make = function (_elm) {
                         ,Mailbox: Mailbox};
    return _elm.Signal.values;
 };Elm.StartApp = Elm.StartApp || {};
-Elm.StartApp.Simple = Elm.StartApp.Simple || {};
-Elm.StartApp.Simple.make = function (_elm) {
+Elm.StartApp.make = function (_elm) {
    "use strict";
    _elm.StartApp = _elm.StartApp || {};
-   _elm.StartApp.Simple = _elm.StartApp.Simple || {};
-   if (_elm.StartApp.Simple.values)
-   return _elm.StartApp.Simple.values;
+   if (_elm.StartApp.values)
+   return _elm.StartApp.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "StartApp.Simple",
+   $moduleName = "StartApp",
    $Basics = Elm.Basics.make(_elm),
+   $Effects = Elm.Effects.make(_elm),
    $Html = Elm.Html.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
-   $Signal = Elm.Signal.make(_elm);
+   $Signal = Elm.Signal.make(_elm),
+   $Task = Elm.Task.make(_elm);
    var start = function (config) {
       return function () {
-         var actions = $Signal.mailbox($Maybe.Nothing);
-         var address = A2($Signal.forwardTo,
-         actions.address,
-         $Maybe.Just);
-         var model = A3($Signal.foldp,
-         F2(function (_v0,model) {
+         var updateStep = F2(function (action,
+         _v0) {
             return function () {
                switch (_v0.ctor)
-               {case "Just":
-                  return A2(config.update,
-                    _v0._0,
-                    model);}
+               {case "_Tuple2":
+                  return function () {
+                       var $ = A2(config.update,
+                       action,
+                       _v0._0),
+                       newModel = $._0,
+                       additionalEffects = $._1;
+                       return {ctor: "_Tuple2"
+                              ,_0: newModel
+                              ,_1: $Effects.batch(_L.fromArray([_v0._1
+                                                               ,additionalEffects]))};
+                    }();}
                _U.badCase($moduleName,
-               "on line 91, column 34 to 60");
+               "between lines 94 and 97");
             }();
-         }),
-         config.model,
-         actions.signal);
-         return A2($Signal.map,
-         config.view(address),
-         model);
+         });
+         var update = F2(function (actions,
+         _v4) {
+            return function () {
+               switch (_v4.ctor)
+               {case "_Tuple2":
+                  return A3($List.foldl,
+                    updateStep,
+                    {ctor: "_Tuple2"
+                    ,_0: _v4._0
+                    ,_1: $Effects.none},
+                    actions);}
+               _U.badCase($moduleName,
+               "on line 101, column 13 to 64");
+            }();
+         });
+         var messages = $Signal.mailbox(_L.fromArray([]));
+         var singleton = function (action) {
+            return _L.fromArray([action]);
+         };
+         var address = A2($Signal.forwardTo,
+         messages.address,
+         singleton);
+         var inputs = $Signal.mergeMany(A2($List._op["::"],
+         messages.signal,
+         A2($List.map,
+         $Signal.map(singleton),
+         config.inputs)));
+         var effectsAndModel = A3($Signal.foldp,
+         update,
+         config.init,
+         inputs);
+         var model = A2($Signal.map,
+         $Basics.fst,
+         effectsAndModel);
+         return {_: {}
+                ,html: A2($Signal.map,
+                config.view(address),
+                model)
+                ,model: model
+                ,tasks: A2($Signal.map,
+                function ($) {
+                   return $Effects.toTask(messages.address)($Basics.snd($));
+                },
+                effectsAndModel)};
       }();
    };
-   var Config = F3(function (a,
-   b,
-   c) {
+   var App = F3(function (a,b,c) {
       return {_: {}
-             ,model: a
-             ,update: c
-             ,view: b};
+             ,html: a
+             ,model: b
+             ,tasks: c};
    });
-   _elm.StartApp.Simple.values = {_op: _op
-                                 ,Config: Config
-                                 ,start: start};
-   return _elm.StartApp.Simple.values;
+   var Config = F4(function (a,
+   b,
+   c,
+   d) {
+      return {_: {}
+             ,init: a
+             ,inputs: d
+             ,update: b
+             ,view: c};
+   });
+   _elm.StartApp.values = {_op: _op
+                          ,start: start
+                          ,Config: Config
+                          ,App: App};
+   return _elm.StartApp.values;
 };Elm.String = Elm.String || {};
 Elm.String.make = function (_elm) {
    "use strict";
@@ -12241,16 +14071,36 @@ Elm.Svg.Attributes.make = function (_elm) {
    var y2 = $VirtualDom.attribute("y2");
    var y1 = $VirtualDom.attribute("y1");
    var y = $VirtualDom.attribute("y");
-   var xmlSpace = $VirtualDom.attribute("xml:space");
-   var xmlLang = $VirtualDom.attribute("xml:lang");
-   var xmlBase = $VirtualDom.attribute("xml:base");
-   var xlinkType = $VirtualDom.attribute("xlink:type");
-   var xlinkTitle = $VirtualDom.attribute("xlink:title");
-   var xlinkShow = $VirtualDom.attribute("xlink:show");
-   var xlinkRole = $VirtualDom.attribute("xlink:role");
-   var xlinkHref = $VirtualDom.attribute("xlink:href");
-   var xlinkArcrole = $VirtualDom.attribute("xlink:arcrole");
-   var xlinkActuate = $VirtualDom.attribute("xlink:actuate");
+   var xmlSpace = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/XML/1998/namespace",
+   "xml:space");
+   var xmlLang = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/XML/1998/namespace",
+   "xml:lang");
+   var xmlBase = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/XML/1998/namespace",
+   "xml:base");
+   var xlinkType = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:type");
+   var xlinkTitle = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:title");
+   var xlinkShow = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:show");
+   var xlinkRole = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:role");
+   var xlinkHref = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:href");
+   var xlinkArcrole = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:arcrole");
+   var xlinkActuate = A2($VirtualDom.attributeNS,
+   "http://www.w3.org/1999/xlink",
+   "xlink:actuate");
    var xChannelSelector = $VirtualDom.attribute("xChannelSelector");
    var x2 = $VirtualDom.attribute("x2");
    var x1 = $VirtualDom.attribute("x1");
@@ -13062,6 +14912,84 @@ Elm.Text.make = function (_elm) {
                       ,Over: Over
                       ,Through: Through};
    return _elm.Text.values;
+};Elm.Time = Elm.Time || {};
+Elm.Time.make = function (_elm) {
+   "use strict";
+   _elm.Time = _elm.Time || {};
+   if (_elm.Time.values)
+   return _elm.Time.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Time",
+   $Basics = Elm.Basics.make(_elm),
+   $Native$Signal = Elm.Native.Signal.make(_elm),
+   $Native$Time = Elm.Native.Time.make(_elm),
+   $Signal = Elm.Signal.make(_elm);
+   var delay = $Native$Signal.delay;
+   var since = F2(function (time,
+   signal) {
+      return function () {
+         var stop = A2($Signal.map,
+         $Basics.always(-1),
+         A2(delay,time,signal));
+         var start = A2($Signal.map,
+         $Basics.always(1),
+         signal);
+         var delaydiff = A3($Signal.foldp,
+         F2(function (x,y) {
+            return x + y;
+         }),
+         0,
+         A2($Signal.merge,start,stop));
+         return A2($Signal.map,
+         F2(function (x,y) {
+            return !_U.eq(x,y);
+         })(0),
+         delaydiff);
+      }();
+   });
+   var timestamp = $Native$Signal.timestamp;
+   var every = $Native$Time.every;
+   var fpsWhen = $Native$Time.fpsWhen;
+   var fps = function (targetFrames) {
+      return A2(fpsWhen,
+      targetFrames,
+      $Signal.constant(true));
+   };
+   var inMilliseconds = function (t) {
+      return t;
+   };
+   var millisecond = 1;
+   var second = 1000 * millisecond;
+   var minute = 60 * second;
+   var hour = 60 * minute;
+   var inHours = function (t) {
+      return t / hour;
+   };
+   var inMinutes = function (t) {
+      return t / minute;
+   };
+   var inSeconds = function (t) {
+      return t / second;
+   };
+   _elm.Time.values = {_op: _op
+                      ,millisecond: millisecond
+                      ,second: second
+                      ,minute: minute
+                      ,hour: hour
+                      ,inMilliseconds: inMilliseconds
+                      ,inSeconds: inSeconds
+                      ,inMinutes: inMinutes
+                      ,inHours: inHours
+                      ,fps: fps
+                      ,fpsWhen: fpsWhen
+                      ,every: every
+                      ,timestamp: timestamp
+                      ,delay: delay
+                      ,since: since};
+   return _elm.Time.values;
 };Elm.Transform2D = Elm.Transform2D || {};
 Elm.Transform2D.make = function (_elm) {
    "use strict";
