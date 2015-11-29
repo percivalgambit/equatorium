@@ -173,7 +173,7 @@ view address model =
             defs
                 []
                 [ pattern
-                        [ id "background"
+                        [ id model.background
                         , patternUnits "userSpaceOnUse"
                         , height << toString <| model.center.y + model.radius
                         , width << toString <| model.center.x + model.radius
@@ -184,11 +184,11 @@ view address model =
                             , width << toString <| model.radius*2
                             , x << toString <| model.center.x - model.radius
                             , y << toString <| model.center.y - model.radius
-                            , transform
-                                ("rotate("
-                                 ++ toString (model.angle)
-                                 ++ ", " ++ toString (model.center.x)
-                                 ++ ", " ++ toString (model.center.y) ++ ")")
+                            , transform <|
+                                "rotate("
+                                 ++ toString model.angle
+                                 ++ ", " ++ toString model.center.x
+                                 ++ ", " ++ toString model.center.y ++ ")"
                             ]
                             []
                         ]
@@ -198,7 +198,7 @@ view address model =
                 [ cx << toString <| model.center.x
                 , cy << toString <| model.center.y
                 , r << toString <| model.radius
-                , fill "url(#background)"
+                , fill <| "url(#" ++ model.background ++ ")"
                 , stroke "black"
                 , strokeWidth "1"
                 ]
