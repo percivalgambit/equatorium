@@ -19,8 +19,10 @@ type alias Model =
 init : (Model, Effects Action)
 init =
     let
-        (deferent, deferentFx) = Disk.init { x = 250, y = 250, radius = 125 }
-        (epicycle, epicycleFx) = Disk.init { x = 250, y = 200, radius = 50 }
+        (deferent, deferentFx) =
+            Disk.init { x = 250, y = 250, radius = 125, background = "Disk3.png" }
+        (epicycle, epicycleFx) =
+            Disk.init { x = 250, y = 200, radius = 50, background = "Disk2.png" }
     in
         ( Model deferent epicycle
         , Effects.none
@@ -81,9 +83,8 @@ view address {deferent, epicycle} =
         [ width << toString <| deferent.center.x + deferent.radius * 1.1
         , height << toString <| deferent.center.y + deferent.radius * 1.1
         ]
-        [ Disk.view (Signal.forwardTo address Deferent) deferent
-        , Disk.view (Signal.forwardTo address Epicycle) epicycle
-        ]
+        (Disk.view (Signal.forwardTo address Deferent) deferent
+        ++ Disk.view (Signal.forwardTo address Epicycle) epicycle)
 
 
 -- INPUTS

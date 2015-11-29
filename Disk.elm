@@ -4,7 +4,7 @@ import DragAndDrop
 import Effects exposing (Effects)
 import Graphics.Input
 import Signal exposing (Mailbox, (<~))
-import Svg exposing (Svg, circle, g)
+import Svg exposing (Svg, circle, defs, pattern, image)
 import Svg.Attributes exposing (..)
 import Svg.Events exposing (onClick)
 
@@ -14,6 +14,7 @@ import Svg.Events exposing (onClick)
 type alias Model = 
     { center : Point
     , radius : Float
+    , background : String
     , angle : Degrees -- Measured from the top of the disk
     , selected : Bool -- If the disk has been clicked by the mouse
     }
@@ -28,13 +29,14 @@ type alias Point =
     }
 
 
-init : { x:Float, y:Float, radius:Float } -> (Model, Effects Action)
-init {x, y, radius} =
+init : { x:Float, y:Float, radius:Float, background:String } -> (Model, Effects Action)
+init {x, y, radius, background} =
     let
         center = Point x y
         model =
             { center = center
             , radius = radius
+            , background = background
             , angle = 0
             , selected = False
             }
@@ -52,8 +54,8 @@ degreesToRadians : Degrees -> Radians
 degreesToRadians = degrees
 
 
-getAngleIndicatorPosition : Model -> Point
-getAngleIndicatorPosition {center, radius, angle} =
+getAnglePosition : Model -> Point
+getAnglePosition {center, radius, angle} =
     { x = center.x + radius * (sin <| degreesToRadians angle)
     , y = center.y - radius * (cos <| degreesToRadians angle)
     }
@@ -94,7 +96,7 @@ update action model =
                 radiansToDegrees <| pi/2 + atan2 (y - newCenter.y) (x - newCenter.x)
             newAngle : Radians
             newAngle =
-                model |> getAngleIndicatorPosition
+                model |> getAnglePosition
                       |> doRotation
                       |> getAngleOnDisk
             newModel : Model
@@ -164,28 +166,42 @@ mouseEventToDiskAction action model =
 
 -- VIEW
 
-view : Signal.Address Action -> Model -> Svg
+view : Signal.Address Action -> Model -> List Svg
 view address model =
     let
-        disk = 
+        background =
+            defs
+                []
+                [ pattern
+                        [ id "background"
+                        , patternUnits "userSpaceOnUse"
+                        , height << toString <| model.center.y + model.radius
+                        , width << toString <| model.center.x + model.radius
+                        ]
+                        [ image
+                            [ xlinkHref model.background
+                            , height << toString <| model.radius*2
+                            , width << toString <| model.radius*2
+                            , x << toString <| model.center.x - model.radius
+                            , y << toString <| model.center.y - model.radius
+                            , transform
+                                ("rotate("
+                                 ++ toString (model.angle)
+                                 ++ ", " ++ toString (model.center.x)
+                                 ++ ", " ++ toString (model.center.y) ++ ")")
+                            ]
+                            []
+                        ]
+                ]
+        disk =
             circle
                 [ cx << toString <| model.center.x
                 , cy << toString <| model.center.y
                 , r << toString <| model.radius
-                , fill "#FFFFFF"
+                , fill "url(#background)"
                 , stroke "black"
                 , strokeWidth "1"
                 ]
                 []
-        angleIndicatorPosition = getAngleIndicatorPosition model
-        angleIndicator =
-            circle
-                [ cx << toString <| angleIndicatorPosition.x
-                , cy << toString <| angleIndicatorPosition.y
-                , r << toString <| model.radius / 13
-                , style "fill: #0000FF;"
-                ]
-                []
     in
-        g []
-          [ disk, angleIndicator ]
+        [ background, disk ]
