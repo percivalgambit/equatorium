@@ -2220,14 +2220,18 @@ Elm.Disk.make = function (_elm) {
          _L.fromArray([$Svg$Attributes.cx($Basics.toString(model.center.x))
                       ,$Svg$Attributes.cy($Basics.toString(model.center.y))
                       ,$Svg$Attributes.r($Basics.toString(model.radius))
-                      ,$Svg$Attributes.fill("url(#background)")
+                      ,$Svg$Attributes.fill(A2($Basics._op["++"],
+                      "url(#",
+                      A2($Basics._op["++"],
+                      model.background,
+                      ")")))
                       ,$Svg$Attributes.stroke("black")
                       ,$Svg$Attributes.strokeWidth("1")]),
          _L.fromArray([]));
          var background = A2($Svg.defs,
          _L.fromArray([]),
          _L.fromArray([A2($Svg.pattern,
-         _L.fromArray([$Svg$Attributes.id("background")
+         _L.fromArray([$Svg$Attributes.id(model.background)
                       ,$Svg$Attributes.patternUnits("userSpaceOnUse")
                       ,$Svg$Attributes.height($Basics.toString(model.center.y + model.radius))
                       ,$Svg$Attributes.width($Basics.toString(model.center.x + model.radius))]),
