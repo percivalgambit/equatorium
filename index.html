@@ -2213,6 +2213,48 @@ Elm.Disk.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Svg = Elm.Svg.make(_elm),
    $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
+   var view = F2(function (address,
+   model) {
+      return function () {
+         var disk = A2($Svg.circle,
+         _L.fromArray([$Svg$Attributes.cx($Basics.toString(model.center.x))
+                      ,$Svg$Attributes.cy($Basics.toString(model.center.y))
+                      ,$Svg$Attributes.r($Basics.toString(model.radius))
+                      ,$Svg$Attributes.fill("url(#background)")
+                      ,$Svg$Attributes.stroke("black")
+                      ,$Svg$Attributes.strokeWidth("1")]),
+         _L.fromArray([]));
+         var background = A2($Svg.defs,
+         _L.fromArray([]),
+         _L.fromArray([A2($Svg.pattern,
+         _L.fromArray([$Svg$Attributes.id("background")
+                      ,$Svg$Attributes.patternUnits("userSpaceOnUse")
+                      ,$Svg$Attributes.height($Basics.toString(model.center.y + model.radius))
+                      ,$Svg$Attributes.width($Basics.toString(model.center.x + model.radius))]),
+         _L.fromArray([A2($Svg.image,
+         _L.fromArray([$Svg$Attributes.xlinkHref(model.background)
+                      ,$Svg$Attributes.height($Basics.toString(model.radius * 2))
+                      ,$Svg$Attributes.width($Basics.toString(model.radius * 2))
+                      ,$Svg$Attributes.x($Basics.toString(model.center.x - model.radius))
+                      ,$Svg$Attributes.y($Basics.toString(model.center.y - model.radius))
+                      ,$Svg$Attributes.transform(A2($Basics._op["++"],
+                      "rotate(",
+                      A2($Basics._op["++"],
+                      $Basics.toString(model.angle),
+                      A2($Basics._op["++"],
+                      ", ",
+                      A2($Basics._op["++"],
+                      $Basics.toString(model.center.x),
+                      A2($Basics._op["++"],
+                      ", ",
+                      A2($Basics._op["++"],
+                      $Basics.toString(model.center.y),
+                      ")")))))))]),
+         _L.fromArray([]))]))]));
+         return _L.fromArray([background
+                             ,disk]);
+      }();
+   });
    var within = F2(function (point,
    model) {
       return function () {
@@ -2236,37 +2278,13 @@ Elm.Disk.make = function (_elm) {
              ,_1: b};
    });
    var degreesToRadians = $Basics.degrees;
-   var getAngleIndicatorPosition = function (_v0) {
+   var getAnglePosition = function (_v0) {
       return function () {
          return {_: {}
                 ,x: _v0.center.x + _v0.radius * $Basics.sin(degreesToRadians(_v0.angle))
                 ,y: _v0.center.y - _v0.radius * $Basics.cos(degreesToRadians(_v0.angle))};
       }();
    };
-   var view = F2(function (address,
-   model) {
-      return function () {
-         var angleIndicatorPosition = getAngleIndicatorPosition(model);
-         var angleIndicator = A2($Svg.circle,
-         _L.fromArray([$Svg$Attributes.cx($Basics.toString(angleIndicatorPosition.x))
-                      ,$Svg$Attributes.cy($Basics.toString(angleIndicatorPosition.y))
-                      ,$Svg$Attributes.r($Basics.toString(model.radius / 13))
-                      ,$Svg$Attributes.style("fill: #0000FF;")]),
-         _L.fromArray([]));
-         var disk = A2($Svg.circle,
-         _L.fromArray([$Svg$Attributes.cx($Basics.toString(model.center.x))
-                      ,$Svg$Attributes.cy($Basics.toString(model.center.y))
-                      ,$Svg$Attributes.r($Basics.toString(model.radius))
-                      ,$Svg$Attributes.fill("#FFFFFF")
-                      ,$Svg$Attributes.stroke("black")
-                      ,$Svg$Attributes.strokeWidth("1")]),
-         _L.fromArray([]));
-         return A2($Svg.g,
-         _L.fromArray([]),
-         _L.fromArray([disk
-                      ,angleIndicator]));
-      }();
-   });
    var radiansToDegrees = function (radians) {
       return radians * 180 / $Basics.pi;
    };
@@ -2308,7 +2326,7 @@ Elm.Disk.make = function (_elm) {
                        _v11.x - newCenter.x));
                     }();
                  };
-                 var newAngle = getAngleOnDisk(doRotation(getAngleIndicatorPosition(model)));
+                 var newAngle = getAngleOnDisk(doRotation(getAnglePosition(model)));
                  var newModel = _U.replace([["center"
                                             ,newCenter]
                                            ,["angle",newAngle]],
@@ -2336,7 +2354,7 @@ Elm.Disk.make = function (_elm) {
                         ,_1: $Effects.none};
               }();}
          _U.badCase($moduleName,
-         "between lines 69 and 115");
+         "between lines 71 and 117");
       }();
    });
    var Point = F2(function (a,b) {
@@ -2350,6 +2368,7 @@ Elm.Disk.make = function (_elm) {
             _v13.y);
             var model = {_: {}
                         ,angle: 0
+                        ,background: _v13.background
                         ,center: center
                         ,radius: _v13.radius
                         ,selected: false};
@@ -2367,7 +2386,7 @@ Elm.Disk.make = function (_elm) {
               $Basics.toFloat(_v15._0),
               $Basics.toFloat(_v15._1));}
          _U.badCase($moduleName,
-         "on line 120, column 5 to 33");
+         "on line 122, column 5 to 33");
       }();
    };
    var mouseEventToDiskAction = F2(function (action,
@@ -2398,18 +2417,20 @@ Elm.Disk.make = function (_elm) {
                  model) ? $Maybe.Just(Select) : $Maybe.Nothing;
               }();}
          _U.badCase($moduleName,
-         "between lines 133 and 162");
+         "between lines 135 and 164");
       }();
    });
-   var Model = F4(function (a,
+   var Model = F5(function (a,
    b,
    c,
-   d) {
+   d,
+   e) {
       return {_: {}
-             ,angle: c
+             ,angle: d
+             ,background: c
              ,center: a
              ,radius: b
-             ,selected: d};
+             ,selected: e};
    });
    _elm.Disk.values = {_op: _op
                       ,init: init
@@ -2849,16 +2870,17 @@ Elm.Equitorium.make = function (_elm) {
          return A2($Svg.svg,
          _L.fromArray([$Svg$Attributes.width($Basics.toString(_v0.deferent.center.x + _v0.deferent.radius * 1.1))
                       ,$Svg$Attributes.height($Basics.toString(_v0.deferent.center.y + _v0.deferent.radius * 1.1))]),
-         _L.fromArray([A2($Disk.view,
-                      A2($Signal.forwardTo,
-                      address,
-                      Deferent),
-                      _v0.deferent)
-                      ,A2($Disk.view,
-                      A2($Signal.forwardTo,
-                      address,
-                      Epicycle),
-                      _v0.epicycle)]));
+         A2($Basics._op["++"],
+         A2($Disk.view,
+         A2($Signal.forwardTo,
+         address,
+         Deferent),
+         _v0.deferent),
+         A2($Disk.view,
+         A2($Signal.forwardTo,
+         address,
+         Epicycle),
+         _v0.epicycle)));
       }();
    });
    var MouseEvent = function (a) {
@@ -2875,12 +2897,14 @@ Elm.Equitorium.make = function (_elm) {
    });
    var init = function () {
       var $ = $Disk.init({_: {}
+                         ,background: "Disk2.png"
                          ,radius: 50
                          ,x: 250
                          ,y: 200}),
       epicycle = $._0,
       epicycleFx = $._1;
       var $ = $Disk.init({_: {}
+                         ,background: "Disk3.png"
                          ,radius: 125
                          ,x: 250
                          ,y: 250}),
@@ -2959,11 +2983,11 @@ Elm.Equitorium.make = function (_elm) {
                                  _v2.epicycle)
                                  ,_1: $Effects.none};}
                        _U.badCase($moduleName,
-                       "between lines 46 and 53");
+                       "between lines 48 and 55");
                     }();
                  }();}
             _U.badCase($moduleName,
-            "between lines 38 and 73");
+            "between lines 40 and 75");
          }();
       }();
    });
