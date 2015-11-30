@@ -1,4 +1,4 @@
-module Disk (Model, init, Action(..), update, view, mouseEventToDiskAction) where
+module Disk (Model, init, Action(..), update, view, mouseEventToDiskAction, Point) where
 
 import DragAndDrop
 import Effects exposing (Effects)
@@ -29,7 +29,8 @@ type alias Point =
     }
 
 
-init : { x:Float, y:Float, radius:Float, background:String } -> (Model, Effects Action)
+init : { x:Float, y:Float, radius:Float, background:String }
+       -> (Model, Effects Action)
 init {x, y, radius, background} =
     let
         center = Point x y
@@ -175,15 +176,15 @@ view address model =
                 [ pattern
                         [ id model.background
                         , patternUnits "userSpaceOnUse"
-                        , height << toString <| model.center.y + model.radius
-                        , width << toString <| model.center.x + model.radius
+                        , height <| toString <| model.center.y + model.radius
+                        , width <| toString <| model.center.x + model.radius
                         ]
                         [ image
                             [ xlinkHref model.background
-                            , height << toString <| model.radius*2
-                            , width << toString <| model.radius*2
-                            , x << toString <| model.center.x - model.radius
-                            , y << toString <| model.center.y - model.radius
+                            , height <| toString <| model.radius*2
+                            , width <| toString <| model.radius*2
+                            , x <| toString <| model.center.x - model.radius
+                            , y <| toString <| model.center.y - model.radius
                             , transform <|
                                 "rotate("
                                  ++ toString model.angle
@@ -195,12 +196,10 @@ view address model =
                 ]
         disk =
             circle
-                [ cx << toString <| model.center.x
-                , cy << toString <| model.center.y
-                , r << toString <| model.radius
+                [ cx <| toString model.center.x
+                , cy <| toString model.center.y
+                , r <| toString model.radius
                 , fill <| "url(#" ++ model.background ++ ")"
-                , stroke "black"
-                , strokeWidth "1"
                 ]
                 []
     in

@@ -11,80 +11,150 @@ import Svg.Attributes exposing (..)
 -- MODEL
 
 type alias Model = 
-    { deferent : Disk.Model
+    { zodiac : Disk.Model
+    , deferent : Disk.Model
+    , deferentCircle : Disk.Model
     , epicycle : Disk.Model
+    , earth : Disk.Model
     }
 
 
 init : (Model, Effects Action)
 init =
     let
+        (zodiac, _) =
+            Disk.init { x = 125, y = 125, radius = 110, background = "Zodiac.png" }
         (deferent, deferentFx) =
-            Disk.init { x = 250, y = 250, radius = 125, background = "Disk3.png" }
+            Disk.init { x = 125, y = 125, radius = 98, background = "Deferent.png" }
+        (deferentCircle, deferentCircleFx) =
+            Disk.init { x = 125, y = 120, radius = 90, background = "DeferentCircle.png" }
         (epicycle, epicycleFx) =
-            Disk.init { x = 250, y = 200, radius = 50, background = "Disk2.png" }
+            Disk.init { x = 125, y = 70, radius = 35, background = "Epicycle.png" }
+        (earth, _) =
+            Disk.init { x = 125, y = 120, radius = 14, background = "Earth.png" }
+        scale =
+            3
+
+        scaleDisk disk =
+            { disk | center <- Disk.Point (disk.center.x * scale) (disk.center.y * scale)
+            ,        radius <- disk.radius * scale
+            }
     in
-        ( Model deferent epicycle
-        , Effects.none
+        ( { zodiac = scaleDisk zodiac
+          , deferent = scaleDisk deferent
+          , deferentCircle = scaleDisk deferentCircle
+          , epicycle = scaleDisk epicycle
+          , earth = scaleDisk earth
+          }
+        , Effects.batch
+            [ Effects.map Deferent deferentFx
+            , Effects.map DeferentCircle deferentCircleFx
+            , Effects.map Epicycle epicycleFx
+            ]
         )
 
 
 -- UPDATE
 
 type Action =
-    MouseEvent DragAndDrop.MouseEvent | Deferent Disk.Action | Epicycle Disk.Action
+    MouseEvent DragAndDrop.MouseEvent
+    | Deferent Disk.Action
+    | DeferentCircle Disk.Action
+    | Epicycle Disk.Action
+    | None
 
 
 update : Action -> Model -> (Model, Effects Action)
-update action {deferent, epicycle} =
+update action model =
   case action of
     MouseEvent mouseEvent ->
         let
             epicycleAction =
-                Maybe.map Epicycle <| Disk.mouseEventToDiskAction mouseEvent epicycle
+                Maybe.map Epicycle <| Disk.mouseEventToDiskAction mouseEvent model.epicycle
             deferentAction =
-                Maybe.map Deferent <| Disk.mouseEventToDiskAction mouseEvent deferent
+                Maybe.map Deferent <| Disk.mouseEventToDiskAction mouseEvent model.deferent
+            deferentCircleAction =
+                Maybe.map DeferentCircle <| Disk.mouseEventToDiskAction mouseEvent model.deferentCircle
         in
-            case Maybe.oneOf [ epicycleAction, deferentAction ] of
+            case Maybe.oneOf [ epicycleAction, deferentCircleAction, deferentAction ] of
                 Just act ->
-                    update act (Model deferent epicycle)
+                    update act model
                 Nothing ->
-                    ( Model deferent epicycle
+                    ( model
                     , Effects.none
                     )
     Deferent act ->
         let
-            (newDeferent, deferentFx) = Disk.update act deferent
-            (newEpicycle, epicycleFx) = Disk.update act epicycle
+            (newDeferent, deferentFx) = Disk.update act model.deferent
+            (newDeferentCircle, deferentCircleFx) = Disk.update act model.deferentCircle
+            (newEpicycle, epicycleFx) = Disk.update act model.epicycle
+            (newEarth, _) = Disk.update act model.earth
         in
             case act of
                 Disk.Rotate _ _ ->
-                    ( Model newDeferent newEpicycle
-                    , Effects.none
+                    ( { model | deferent <- newDeferent
+                              , deferentCircle <- newDeferentCircle
+                              , epicycle <- newEpicycle
+                              , earth <- newEarth }
+                    , Effects.batch
+                        [ Effects.map Deferent deferentFx
+                        , Effects.map DeferentCircle deferentCircleFx
+                        , Effects.map Epicycle epicycleFx
+                        ]
                     )
                 _ ->
-                    ( Model newDeferent epicycle
-                    , Effects.none
+                    ( { model | deferent <- newDeferent }
+                    , Effects.map Deferent deferentFx
+                    )
+    DeferentCircle act ->
+        let
+            (newDeferentCircle, deferentCircleFx) = Disk.update act model.deferentCircle
+            (newEpicycle, epicycleFx) = Disk.update act model.epicycle
+        in
+            case act of
+                Disk.Rotate _ _ ->
+                    ( { model | deferentCircle <- newDeferentCircle
+                              , epicycle <- newEpicycle }
+                    , Effects.batch
+                        [ Effects.map DeferentCircle deferentCircleFx
+                        , Effects.map Epicycle epicycleFx
+                        ]
+                    )
+                _ ->
+                    ( { model | deferentCircle <- newDeferentCircle }
+                    , Effects.map DeferentCircle deferentCircleFx
                     )
     Epicycle act ->
         let
-            (newEpicycle, epicycleFx) = Disk.update act epicycle
+            (newEpicycle, epicycleFx) = Disk.update act model.epicycle
         in
-            ( Model deferent newEpicycle
-            , Effects.none
+            ( { model | epicycle <- newEpicycle }
+            , Effects.map Epicycle epicycleFx
             )
+    None ->
+        ( model
+        , Effects.none
+        )
 
 
 -- VIEW
 
 view : Signal.Address Action -> Model -> Svg
-view address {deferent, epicycle} = 
-    svg
-        [ width << toString <| deferent.center.x + deferent.radius * 1.1
-        , height << toString <| deferent.center.y + deferent.radius * 1.1
-        ]
-        (Disk.view (Signal.forwardTo address Deferent) deferent
-        ++ Disk.view (Signal.forwardTo address Epicycle) epicycle)
+view address {zodiac, deferent, deferentCircle, epicycle, earth} =
+    let
+        noAction = Signal.forwardTo address <| always None
+    in
+        svg
+            [ width <| toString <| zodiac.center.x + zodiac.radius
+            , height <| toString <| zodiac.center.y + zodiac.radius
+            ] 
+            <| List.concat
+                [ Disk.view noAction zodiac
+                , Disk.view (Signal.forwardTo address Deferent) deferent
+                , Disk.view (Signal.forwardTo address DeferentCircle) deferentCircle
+                , Disk.view (Signal.forwardTo address Epicycle) epicycle
+                , Disk.view noAction earth
+                ]
 
 
 -- INPUTS
