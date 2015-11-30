@@ -1180,6 +1180,83 @@ Elm.Color.make = function (_elm) {
                        ,gray: gray
                        ,darkGray: darkGray};
    return _elm.Color.values;
+};Elm.Date = Elm.Date || {};
+Elm.Date.make = function (_elm) {
+   "use strict";
+   _elm.Date = _elm.Date || {};
+   if (_elm.Date.values)
+   return _elm.Date.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Date",
+   $Native$Date = Elm.Native.Date.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Time = Elm.Time.make(_elm);
+   var millisecond = $Native$Date.millisecond;
+   var second = $Native$Date.second;
+   var minute = $Native$Date.minute;
+   var hour = $Native$Date.hour;
+   var dayOfWeek = $Native$Date.dayOfWeek;
+   var day = $Native$Date.day;
+   var month = $Native$Date.month;
+   var year = $Native$Date.year;
+   var fromTime = $Native$Date.fromTime;
+   var toTime = $Native$Date.toTime;
+   var fromString = $Native$Date.read;
+   var Dec = {ctor: "Dec"};
+   var Nov = {ctor: "Nov"};
+   var Oct = {ctor: "Oct"};
+   var Sep = {ctor: "Sep"};
+   var Aug = {ctor: "Aug"};
+   var Jul = {ctor: "Jul"};
+   var Jun = {ctor: "Jun"};
+   var May = {ctor: "May"};
+   var Apr = {ctor: "Apr"};
+   var Mar = {ctor: "Mar"};
+   var Feb = {ctor: "Feb"};
+   var Jan = {ctor: "Jan"};
+   var Sun = {ctor: "Sun"};
+   var Sat = {ctor: "Sat"};
+   var Fri = {ctor: "Fri"};
+   var Thu = {ctor: "Thu"};
+   var Wed = {ctor: "Wed"};
+   var Tue = {ctor: "Tue"};
+   var Mon = {ctor: "Mon"};
+   var Date = {ctor: "Date"};
+   _elm.Date.values = {_op: _op
+                      ,fromString: fromString
+                      ,toTime: toTime
+                      ,fromTime: fromTime
+                      ,year: year
+                      ,month: month
+                      ,day: day
+                      ,dayOfWeek: dayOfWeek
+                      ,hour: hour
+                      ,minute: minute
+                      ,second: second
+                      ,millisecond: millisecond
+                      ,Jan: Jan
+                      ,Feb: Feb
+                      ,Mar: Mar
+                      ,Apr: Apr
+                      ,May: May
+                      ,Jun: Jun
+                      ,Jul: Jul
+                      ,Aug: Aug
+                      ,Sep: Sep
+                      ,Oct: Oct
+                      ,Nov: Nov
+                      ,Dec: Dec
+                      ,Mon: Mon
+                      ,Tue: Tue
+                      ,Wed: Wed
+                      ,Thu: Thu
+                      ,Fri: Fri
+                      ,Sat: Sat
+                      ,Sun: Sun};
+   return _elm.Date.values;
 };Elm.Debug = Elm.Debug || {};
 Elm.Debug.make = function (_elm) {
    "use strict";
@@ -2838,18 +2915,19 @@ Elm.Effects.make = function (_elm) {
                          ,batch: batch
                          ,toTask: toTask};
    return _elm.Effects.values;
-};Elm.Equitorium = Elm.Equitorium || {};
-Elm.Equitorium.make = function (_elm) {
+};Elm.Equatorium = Elm.Equatorium || {};
+Elm.Equatorium.make = function (_elm) {
    "use strict";
-   _elm.Equitorium = _elm.Equitorium || {};
-   if (_elm.Equitorium.values)
-   return _elm.Equitorium.values;
+   _elm.Equatorium = _elm.Equatorium || {};
+   if (_elm.Equatorium.values)
+   return _elm.Equatorium.values;
    var _op = {},
    _N = Elm.Native,
    _U = _N.Utils.make(_elm),
    _L = _N.List.make(_elm),
-   $moduleName = "Equitorium",
+   $moduleName = "Equatorium",
    $Basics = Elm.Basics.make(_elm),
+   $Date = Elm.Date.make(_elm),
    $Disk = Elm.Disk.make(_elm),
    $DragAndDrop = Elm.DragAndDrop.make(_elm),
    $Effects = Elm.Effects.make(_elm),
@@ -2885,7 +2963,7 @@ Elm.Equitorium.make = function (_elm) {
                     switch (_.ctor)
                     {case "_Tuple2": return _._0;}
                     _U.badCase($moduleName,
-                    "on line 91, column 29 to 56");
+                    "on line 181, column 29 to 56");
                  }();
                  var $ = A2($Disk.update,
                  action._0,
@@ -3005,7 +3083,7 @@ Elm.Equitorium.make = function (_elm) {
                               ,_0: model
                               ,_1: $Effects.none};}
                     _U.badCase($moduleName,
-                    "between lines 79 and 86");
+                    "between lines 169 and 176");
                  }();
               }();
             case "None":
@@ -3013,7 +3091,7 @@ Elm.Equitorium.make = function (_elm) {
                    ,_0: model
                    ,_1: $Effects.none};}
          _U.badCase($moduleName,
-         "between lines 69 and 137");
+         "between lines 159 and 227");
       }();
    });
    var view = F2(function (address,
@@ -3053,6 +3131,213 @@ Elm.Equitorium.make = function (_elm) {
    var inputs = _L.fromArray([A2($Signal.map,
    MouseEvent,
    $DragAndDrop.mouseEvents)]);
+   _op["!!"] = F2(function (xs,n) {
+      return $Maybe.withDefault(-1)($List.head(A2($List.drop,
+      n,
+      xs)));
+   });
+   var julianDayNumber = function (date) {
+      return function () {
+         var dateDay = $Date.day(date);
+         var dateCentury = A2($Basics._op["%"],
+         $Date.year(date),
+         100);
+         var dateCenturyYear = $Date.year(date) / 100 | 0;
+         var commonYears = _L.fromArray([15
+                                        ,17
+                                        ,18
+                                        ,19]);
+         var decemberTable = _L.range(335,
+         365);
+         var novemberTable = _L.range(305,
+         334);
+         var octoberTable = _L.range(274,
+         304);
+         var septemberTable = _L.range(244,
+         273);
+         var augustTable = _L.range(213,
+         243);
+         var julyTable = _L.range(182,
+         212);
+         var juneTable = _L.range(152,
+         181);
+         var mayTable = _L.range(121,
+         151);
+         var aprilTable = _L.range(91,
+         120);
+         var marchTable = _L.range(60,
+         90);
+         var februaryTable = _L.range(32,
+         60);
+         var januaryTable = _L.range(1,
+         31);
+         var dateMonthTable = function () {
+            var _v18 = $Date.month(date);
+            switch (_v18.ctor)
+            {case "Apr": return aprilTable;
+               case "Aug": return augustTable;
+               case "Dec":
+               return decemberTable;
+               case "Feb":
+               return februaryTable;
+               case "Jan": return januaryTable;
+               case "Jul": return julyTable;
+               case "Jun": return juneTable;
+               case "Mar": return marchTable;
+               case "May": return mayTable;
+               case "Nov":
+               return novemberTable;
+               case "Oct": return octoberTable;
+               case "Sep":
+               return septemberTable;}
+            _U.badCase($moduleName,
+            "between lines 113 and 126");
+         }();
+         var centuryTable = _L.fromArray([0
+                                         ,366
+                                         ,731
+                                         ,1096
+                                         ,1461
+                                         ,1827
+                                         ,2192
+                                         ,2557
+                                         ,2922
+                                         ,3288
+                                         ,3653
+                                         ,4018
+                                         ,4383
+                                         ,4749
+                                         ,5114
+                                         ,5479
+                                         ,5844
+                                         ,6210
+                                         ,6575
+                                         ,6940
+                                         ,7305
+                                         ,7671
+                                         ,8036
+                                         ,8401
+                                         ,8766
+                                         ,9132
+                                         ,9497
+                                         ,9862
+                                         ,10227
+                                         ,10593
+                                         ,10958
+                                         ,11323
+                                         ,11688
+                                         ,12054
+                                         ,12419
+                                         ,12784
+                                         ,13149
+                                         ,13515
+                                         ,13880
+                                         ,14245
+                                         ,14610
+                                         ,14976
+                                         ,15341
+                                         ,15706
+                                         ,16071
+                                         ,16437
+                                         ,16802
+                                         ,17167
+                                         ,17532
+                                         ,17898
+                                         ,18263
+                                         ,18628
+                                         ,18993
+                                         ,19359
+                                         ,19724
+                                         ,20089
+                                         ,20454
+                                         ,20820
+                                         ,21185
+                                         ,21550
+                                         ,21915
+                                         ,22281
+                                         ,22646
+                                         ,23011
+                                         ,23376
+                                         ,23742
+                                         ,24107
+                                         ,24472
+                                         ,24837
+                                         ,25203
+                                         ,25568
+                                         ,25933
+                                         ,26298
+                                         ,26664
+                                         ,27029
+                                         ,27394
+                                         ,27759
+                                         ,28125
+                                         ,28490
+                                         ,28855
+                                         ,29220
+                                         ,29586
+                                         ,29951
+                                         ,30316
+                                         ,30681
+                                         ,31047
+                                         ,31412
+                                         ,31777
+                                         ,32142
+                                         ,32508
+                                         ,32873
+                                         ,33238
+                                         ,33603
+                                         ,33969
+                                         ,34334
+                                         ,34699
+                                         ,35064
+                                         ,35430
+                                         ,35795
+                                         ,36160]);
+         var centuryYearTable = _L.fromArray([1721057
+                                             ,1777582
+                                             ,1794107
+                                             ,1830632
+                                             ,1867157
+                                             ,1903682
+                                             ,1940207
+                                             ,1976732
+                                             ,2013257
+                                             ,2049782
+                                             ,2086307
+                                             ,2122832
+                                             ,2159357
+                                             ,2195882
+                                             ,2232407
+                                             ,2268923
+                                             ,2305447
+                                             ,2341972
+                                             ,2378496
+                                             ,2415020
+                                             ,2451544]);
+         var preliminaryDayNumber = A2(_op["!!"],
+         centuryYearTable,
+         dateCenturyYear) + A2(_op["!!"],
+         centuryTable,
+         dateCentury) + A2(_op["!!"],
+         dateMonthTable,
+         dateDay);
+         var dayNumberWithCommonYear = A2($List.member,
+         dateCenturyYear,
+         commonYears) && !_U.eq(dateCentury,
+         0) ? preliminaryDayNumber - 1 : preliminaryDayNumber;
+         var dayNumberWithLeapYear = _U.eq(A2($Basics._op["%"],
+         dateCentury,
+         4),
+         0) && _U.cmp(A2(_op["!!"],
+         dateMonthTable,
+         1),
+         60) > -1 ? A2($List.member,
+         dateCenturyYear,
+         commonYears) && _U.eq(dateCentury,
+         0) ? dayNumberWithCommonYear : dayNumberWithCommonYear + 1 : dayNumberWithCommonYear;
+         return dayNumberWithLeapYear + $Basics.toFloat(12 - $Date.hour(date)) / 24;
+      }();
+   };
    var init = function () {
       var scale = 3;
       var scaleDisk = function (disk) {
@@ -3073,7 +3358,7 @@ Elm.Equitorium.make = function (_elm) {
          switch (_.ctor)
          {case "_Tuple2": return _._0;}
          _U.badCase($moduleName,
-         "on line 34, column 13 to 82");
+         "on line 35, column 13 to 82");
       }();
       var $ = $Disk.init({_: {}
                          ,background: "Epicycle.png"
@@ -3105,7 +3390,7 @@ Elm.Equitorium.make = function (_elm) {
          switch (_.ctor)
          {case "_Tuple2": return _._0;}
          _U.badCase($moduleName,
-         "on line 26, column 13 to 84");
+         "on line 27, column 13 to 84");
       }();
       return {ctor: "_Tuple2"
              ,_0: {_: {}
@@ -3124,6 +3409,30 @@ Elm.Equitorium.make = function (_elm) {
                                               Epicycle,
                                               epicycleFx)]))};
    }();
+   var dateToEquatoriumPosition = function (date) {
+      return function () {
+         var meanEpicyclicAnomalyAtEpoch = 346 + 9 / 60;
+         var meanLongitudeAtEpoch = 293 + 33 / 60;
+         var apogeeLongitudeAtEpoch = 148 + 37 / 60;
+         var rateOfPrecession = 1.807;
+         var meanMotionInEpicyclicAnomaly = 0.46157618;
+         var meanMotionInLongitude = 0.52407116;
+         var epoch = 2415020;
+         var julianDaysSinceEpoch = julianDayNumber(date) - epoch;
+         var julianCenturiesSinceEpoch = julianDaysSinceEpoch / 36525;
+         var apogeeLongitude = apogeeLongitudeAtEpoch + rateOfPrecession * julianCenturiesSinceEpoch;
+         var meanLongitude = meanLongitudeAtEpoch + meanMotionInLongitude * julianDaysSinceEpoch;
+         var meanEpicyclicAnomaly = meanEpicyclicAnomalyAtEpoch + meanMotionInEpicyclicAnomaly * julianDaysSinceEpoch;
+         var _ = init;
+         var initialModel = function () {
+            switch (_.ctor)
+            {case "_Tuple2": return _._0;}
+            _U.badCase($moduleName,
+            "on line 234, column 13 to 17");
+         }();
+         return initialModel;
+      }();
+   };
    var Model = F5(function (a,
    b,
    c,
@@ -3136,13 +3445,13 @@ Elm.Equitorium.make = function (_elm) {
              ,epicycle: d
              ,zodiac: a};
    });
-   _elm.Equitorium.values = {_op: _op
+   _elm.Equatorium.values = {_op: _op
                             ,init: init
                             ,update: update
                             ,view: view
                             ,inputs: inputs
                             ,Model: Model};
-   return _elm.Equitorium.values;
+   return _elm.Equatorium.values;
 };Elm.Graphics = Elm.Graphics || {};
 Elm.Graphics.Collage = Elm.Graphics.Collage || {};
 Elm.Graphics.Collage.make = function (_elm) {
@@ -4797,17 +5106,17 @@ Elm.Main.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Main",
    $Basics = Elm.Basics.make(_elm),
-   $Equitorium = Elm.Equitorium.make(_elm),
+   $Equatorium = Elm.Equatorium.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp = Elm.StartApp.make(_elm);
    var app = $StartApp.start({_: {}
-                             ,init: $Equitorium.init
-                             ,inputs: $Equitorium.inputs
-                             ,update: $Equitorium.update
-                             ,view: $Equitorium.view});
+                             ,init: $Equatorium.init
+                             ,inputs: $Equatorium.inputs
+                             ,update: $Equatorium.update
+                             ,view: $Equatorium.view});
    var main = app.html;
    _elm.Main.values = {_op: _op
                       ,app: app
@@ -6090,6 +6399,51 @@ Elm.Native.Color.make = function(localRuntime) {
 
 	return localRuntime.Native.Color.values = {
 		toCss: toCss
+	};
+
+};
+Elm.Native.Date = {};
+Elm.Native.Date.make = function(localRuntime) {
+	localRuntime.Native = localRuntime.Native || {};
+	localRuntime.Native.Date = localRuntime.Native.Date || {};
+	if (localRuntime.Native.Date.values)
+	{
+		return localRuntime.Native.Date.values;
+	}
+
+	var Result = Elm.Result.make(localRuntime);
+
+	function dateNow()
+	{
+		return new window.Date;
+	}
+
+	function readDate(str)
+	{
+		var date = new window.Date(str);
+		return isNaN(date.getTime())
+			? Result.Err("unable to parse '" + str + "' as a date")
+			: Result.Ok(date);
+	}
+
+	var dayTable = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+	var monthTable =
+		["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+		 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+
+	return localRuntime.Native.Date.values = {
+		read    : readDate,
+		year    : function(d) { return d.getFullYear(); },
+		month   : function(d) { return { ctor:monthTable[d.getMonth()] }; },
+		day     : function(d) { return d.getDate(); },
+		hour    : function(d) { return d.getHours(); },
+		minute  : function(d) { return d.getMinutes(); },
+		second  : function(d) { return d.getSeconds(); },
+		millisecond: function (d) { return d.getMilliseconds(); },
+		toTime  : function(d) { return d.getTime(); },
+		fromTime: function(t) { return new window.Date(t); },
+		dayOfWeek : function(d) { return { ctor:dayTable[d.getDay()] }; }
 	};
 
 };
