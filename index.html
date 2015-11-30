@@ -2224,9 +2224,7 @@ Elm.Disk.make = function (_elm) {
                       "url(#",
                       A2($Basics._op["++"],
                       model.background,
-                      ")")))
-                      ,$Svg$Attributes.stroke("black")
-                      ,$Svg$Attributes.strokeWidth("1")]),
+                      ")")))]),
          _L.fromArray([]));
          var background = A2($Svg.defs,
          _L.fromArray([]),
@@ -2358,7 +2356,7 @@ Elm.Disk.make = function (_elm) {
                         ,_1: $Effects.none};
               }();}
          _U.badCase($moduleName,
-         "between lines 71 and 117");
+         "between lines 72 and 118");
       }();
    });
    var Point = F2(function (a,b) {
@@ -2390,7 +2388,7 @@ Elm.Disk.make = function (_elm) {
               $Basics.toFloat(_v15._0),
               $Basics.toFloat(_v15._1));}
          _U.badCase($moduleName,
-         "on line 122, column 5 to 33");
+         "on line 123, column 5 to 33");
       }();
    };
    var mouseEventToDiskAction = F2(function (action,
@@ -2421,7 +2419,7 @@ Elm.Disk.make = function (_elm) {
                  model) ? $Maybe.Just(Select) : $Maybe.Nothing;
               }();}
          _U.badCase($moduleName,
-         "between lines 135 and 164");
+         "between lines 136 and 165");
       }();
    });
    var Model = F5(function (a,
@@ -2442,6 +2440,7 @@ Elm.Disk.make = function (_elm) {
                       ,view: view
                       ,mouseEventToDiskAction: mouseEventToDiskAction
                       ,Model: Model
+                      ,Point: Point
                       ,Rotate: Rotate
                       ,Select: Select
                       ,Unselect: Unselect};
@@ -2860,31 +2859,191 @@ Elm.Equitorium.make = function (_elm) {
    $Signal = Elm.Signal.make(_elm),
    $Svg = Elm.Svg.make(_elm),
    $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
+   var None = {ctor: "None"};
    var Epicycle = function (a) {
       return {ctor: "Epicycle"
+             ,_0: a};
+   };
+   var DeferentCircle = function (a) {
+      return {ctor: "DeferentCircle"
              ,_0: a};
    };
    var Deferent = function (a) {
       return {ctor: "Deferent"
              ,_0: a};
    };
-   var view = F2(function (address,
-   _v0) {
+   var update = F2(function (action,
+   model) {
       return function () {
-         return A2($Svg.svg,
-         _L.fromArray([$Svg$Attributes.width($Basics.toString(_v0.deferent.center.x + _v0.deferent.radius * 1.1))
-                      ,$Svg$Attributes.height($Basics.toString(_v0.deferent.center.y + _v0.deferent.radius * 1.1))]),
-         A2($Basics._op["++"],
-         A2($Disk.view,
-         A2($Signal.forwardTo,
-         address,
-         Deferent),
-         _v0.deferent),
-         A2($Disk.view,
-         A2($Signal.forwardTo,
-         address,
-         Epicycle),
-         _v0.epicycle)));
+         switch (action.ctor)
+         {case "Deferent":
+            return function () {
+                 var _ = A2($Disk.update,
+                 action._0,
+                 model.earth);
+                 var newEarth = function () {
+                    switch (_.ctor)
+                    {case "_Tuple2": return _._0;}
+                    _U.badCase($moduleName,
+                    "on line 91, column 29 to 56");
+                 }();
+                 var $ = A2($Disk.update,
+                 action._0,
+                 model.epicycle),
+                 newEpicycle = $._0,
+                 epicycleFx = $._1;
+                 var $ = A2($Disk.update,
+                 action._0,
+                 model.deferentCircle),
+                 newDeferentCircle = $._0,
+                 deferentCircleFx = $._1;
+                 var $ = A2($Disk.update,
+                 action._0,
+                 model.deferent),
+                 newDeferent = $._0,
+                 deferentFx = $._1;
+                 return function () {
+                    switch (action._0.ctor)
+                    {case "Rotate":
+                       return {ctor: "_Tuple2"
+                              ,_0: _U.replace([["deferent"
+                                               ,newDeferent]
+                                              ,["deferentCircle"
+                                               ,newDeferentCircle]
+                                              ,["epicycle",newEpicycle]
+                                              ,["earth",newEarth]],
+                              model)
+                              ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
+                                                               Deferent,
+                                                               deferentFx)
+                                                               ,A2($Effects.map,
+                                                               DeferentCircle,
+                                                               deferentCircleFx)
+                                                               ,A2($Effects.map,
+                                                               Epicycle,
+                                                               epicycleFx)]))};}
+                    return {ctor: "_Tuple2"
+                           ,_0: _U.replace([["deferent"
+                                            ,newDeferent]],
+                           model)
+                           ,_1: A2($Effects.map,
+                           Deferent,
+                           deferentFx)};
+                 }();
+              }();
+            case "DeferentCircle":
+            return function () {
+                 var $ = A2($Disk.update,
+                 action._0,
+                 model.epicycle),
+                 newEpicycle = $._0,
+                 epicycleFx = $._1;
+                 var $ = A2($Disk.update,
+                 action._0,
+                 model.deferentCircle),
+                 newDeferentCircle = $._0,
+                 deferentCircleFx = $._1;
+                 return function () {
+                    switch (action._0.ctor)
+                    {case "Rotate":
+                       return {ctor: "_Tuple2"
+                              ,_0: _U.replace([["deferentCircle"
+                                               ,newDeferentCircle]
+                                              ,["epicycle",newEpicycle]],
+                              model)
+                              ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
+                                                               DeferentCircle,
+                                                               deferentCircleFx)
+                                                               ,A2($Effects.map,
+                                                               Epicycle,
+                                                               epicycleFx)]))};}
+                    return {ctor: "_Tuple2"
+                           ,_0: _U.replace([["deferentCircle"
+                                            ,newDeferentCircle]],
+                           model)
+                           ,_1: A2($Effects.map,
+                           DeferentCircle,
+                           deferentCircleFx)};
+                 }();
+              }();
+            case "Epicycle":
+            return function () {
+                 var $ = A2($Disk.update,
+                 action._0,
+                 model.epicycle),
+                 newEpicycle = $._0,
+                 epicycleFx = $._1;
+                 return {ctor: "_Tuple2"
+                        ,_0: _U.replace([["epicycle"
+                                         ,newEpicycle]],
+                        model)
+                        ,_1: A2($Effects.map,
+                        Epicycle,
+                        epicycleFx)};
+              }();
+            case "MouseEvent":
+            return function () {
+                 var deferentCircleAction = $Maybe.map(DeferentCircle)(A2($Disk.mouseEventToDiskAction,
+                 action._0,
+                 model.deferentCircle));
+                 var deferentAction = $Maybe.map(Deferent)(A2($Disk.mouseEventToDiskAction,
+                 action._0,
+                 model.deferent));
+                 var epicycleAction = $Maybe.map(Epicycle)(A2($Disk.mouseEventToDiskAction,
+                 action._0,
+                 model.epicycle));
+                 return function () {
+                    var _v14 = $Maybe.oneOf(_L.fromArray([epicycleAction
+                                                         ,deferentCircleAction
+                                                         ,deferentAction]));
+                    switch (_v14.ctor)
+                    {case "Just": return A2(update,
+                         _v14._0,
+                         model);
+                       case "Nothing":
+                       return {ctor: "_Tuple2"
+                              ,_0: model
+                              ,_1: $Effects.none};}
+                    _U.badCase($moduleName,
+                    "between lines 79 and 86");
+                 }();
+              }();
+            case "None":
+            return {ctor: "_Tuple2"
+                   ,_0: model
+                   ,_1: $Effects.none};}
+         _U.badCase($moduleName,
+         "between lines 69 and 137");
+      }();
+   });
+   var view = F2(function (address,
+   _v16) {
+      return function () {
+         return function () {
+            var noAction = $Signal.forwardTo(address)($Basics.always(None));
+            return $Svg.svg(_L.fromArray([$Svg$Attributes.width($Basics.toString(_v16.zodiac.center.x + _v16.zodiac.radius))
+                                         ,$Svg$Attributes.height($Basics.toString(_v16.zodiac.center.y + _v16.zodiac.radius))]))($List.concat(_L.fromArray([A2($Disk.view,
+                                                                                                                                                           noAction,
+                                                                                                                                                           _v16.zodiac)
+                                                                                                                                                           ,A2($Disk.view,
+                                                                                                                                                           A2($Signal.forwardTo,
+                                                                                                                                                           address,
+                                                                                                                                                           Deferent),
+                                                                                                                                                           _v16.deferent)
+                                                                                                                                                           ,A2($Disk.view,
+                                                                                                                                                           A2($Signal.forwardTo,
+                                                                                                                                                           address,
+                                                                                                                                                           DeferentCircle),
+                                                                                                                                                           _v16.deferentCircle)
+                                                                                                                                                           ,A2($Disk.view,
+                                                                                                                                                           A2($Signal.forwardTo,
+                                                                                                                                                           address,
+                                                                                                                                                           Epicycle),
+                                                                                                                                                           _v16.epicycle)
+                                                                                                                                                           ,A2($Disk.view,
+                                                                                                                                                           noAction,
+                                                                                                                                                           _v16.earth)])));
+         }();
       }();
    });
    var MouseEvent = function (a) {
@@ -2894,106 +3053,88 @@ Elm.Equitorium.make = function (_elm) {
    var inputs = _L.fromArray([A2($Signal.map,
    MouseEvent,
    $DragAndDrop.mouseEvents)]);
-   var Model = F2(function (a,b) {
-      return {_: {}
-             ,deferent: a
-             ,epicycle: b};
-   });
    var init = function () {
+      var scale = 3;
+      var scaleDisk = function (disk) {
+         return _U.replace([["center"
+                            ,A2($Disk.Point,
+                            disk.center.x * scale,
+                            disk.center.y * scale)]
+                           ,["radius"
+                            ,disk.radius * scale]],
+         disk);
+      };
+      var _ = $Disk.init({_: {}
+                         ,background: "Earth.png"
+                         ,radius: 14
+                         ,x: 125
+                         ,y: 120});
+      var earth = function () {
+         switch (_.ctor)
+         {case "_Tuple2": return _._0;}
+         _U.badCase($moduleName,
+         "on line 34, column 13 to 82");
+      }();
       var $ = $Disk.init({_: {}
-                         ,background: "Disk2.png"
-                         ,radius: 50
-                         ,x: 250
-                         ,y: 200}),
+                         ,background: "Epicycle.png"
+                         ,radius: 35
+                         ,x: 125
+                         ,y: 70}),
       epicycle = $._0,
       epicycleFx = $._1;
       var $ = $Disk.init({_: {}
-                         ,background: "Disk3.png"
-                         ,radius: 125
-                         ,x: 250
-                         ,y: 250}),
+                         ,background: "DeferentCircle.png"
+                         ,radius: 90
+                         ,x: 125
+                         ,y: 120}),
+      deferentCircle = $._0,
+      deferentCircleFx = $._1;
+      var $ = $Disk.init({_: {}
+                         ,background: "Deferent.png"
+                         ,radius: 98
+                         ,x: 125
+                         ,y: 125}),
       deferent = $._0,
       deferentFx = $._1;
-      return {ctor: "_Tuple2"
-             ,_0: A2(Model,deferent,epicycle)
-             ,_1: $Effects.none};
-   }();
-   var update = F2(function (action,
-   _v2) {
-      return function () {
-         return function () {
-            switch (action.ctor)
-            {case "Deferent":
-               return function () {
-                    var $ = A2($Disk.update,
-                    action._0,
-                    _v2.epicycle),
-                    newEpicycle = $._0,
-                    epicycleFx = $._1;
-                    var $ = A2($Disk.update,
-                    action._0,
-                    _v2.deferent),
-                    newDeferent = $._0,
-                    deferentFx = $._1;
-                    return function () {
-                       switch (action._0.ctor)
-                       {case "Rotate":
-                          return {ctor: "_Tuple2"
-                                 ,_0: A2(Model,
-                                 newDeferent,
-                                 newEpicycle)
-                                 ,_1: $Effects.none};}
-                       return {ctor: "_Tuple2"
-                              ,_0: A2(Model,
-                              newDeferent,
-                              _v2.epicycle)
-                              ,_1: $Effects.none};
-                    }();
-                 }();
-               case "Epicycle":
-               return function () {
-                    var $ = A2($Disk.update,
-                    action._0,
-                    _v2.epicycle),
-                    newEpicycle = $._0,
-                    epicycleFx = $._1;
-                    return {ctor: "_Tuple2"
-                           ,_0: A2(Model,
-                           _v2.deferent,
-                           newEpicycle)
-                           ,_1: $Effects.none};
-                 }();
-               case "MouseEvent":
-               return function () {
-                    var deferentAction = $Maybe.map(Deferent)(A2($Disk.mouseEventToDiskAction,
-                    action._0,
-                    _v2.deferent));
-                    var epicycleAction = $Maybe.map(Epicycle)(A2($Disk.mouseEventToDiskAction,
-                    action._0,
-                    _v2.epicycle));
-                    return function () {
-                       var _v11 = $Maybe.oneOf(_L.fromArray([epicycleAction
-                                                            ,deferentAction]));
-                       switch (_v11.ctor)
-                       {case "Just": return A2(update,
-                            _v11._0,
-                            A2(Model,
-                            _v2.deferent,
-                            _v2.epicycle));
-                          case "Nothing":
-                          return {ctor: "_Tuple2"
-                                 ,_0: A2(Model,
-                                 _v2.deferent,
-                                 _v2.epicycle)
-                                 ,_1: $Effects.none};}
-                       _U.badCase($moduleName,
-                       "between lines 48 and 55");
-                    }();
-                 }();}
-            _U.badCase($moduleName,
-            "between lines 40 and 75");
-         }();
+      var _ = $Disk.init({_: {}
+                         ,background: "Zodiac.png"
+                         ,radius: 110
+                         ,x: 125
+                         ,y: 125});
+      var zodiac = function () {
+         switch (_.ctor)
+         {case "_Tuple2": return _._0;}
+         _U.badCase($moduleName,
+         "on line 26, column 13 to 84");
       }();
+      return {ctor: "_Tuple2"
+             ,_0: {_: {}
+                  ,deferent: scaleDisk(deferent)
+                  ,deferentCircle: scaleDisk(deferentCircle)
+                  ,earth: scaleDisk(earth)
+                  ,epicycle: scaleDisk(epicycle)
+                  ,zodiac: scaleDisk(zodiac)}
+             ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
+                                              Deferent,
+                                              deferentFx)
+                                              ,A2($Effects.map,
+                                              DeferentCircle,
+                                              deferentCircleFx)
+                                              ,A2($Effects.map,
+                                              Epicycle,
+                                              epicycleFx)]))};
+   }();
+   var Model = F5(function (a,
+   b,
+   c,
+   d,
+   e) {
+      return {_: {}
+             ,deferent: b
+             ,deferentCircle: c
+             ,earth: e
+             ,epicycle: d
+             ,zodiac: a};
    });
    _elm.Equitorium.values = {_op: _op
                             ,init: init
