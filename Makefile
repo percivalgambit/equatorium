@@ -1,11 +1,8 @@
-all: equitorium
+all: equatorium
 
-.PHONY: equitorium
-equitorium: Main.elm Disk.elm Equitorium.elm | html
+.PHONY: equatorium
+equatorium: Main.elm Disk.elm Equatorium.elm
 	elm-make $< --output=html/index.html
-
-html:
-	mkdir -p $@
 
 .PHONY: clean
 clean:

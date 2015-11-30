@@ -1,2 +1,2 @@
-# equitorium
-An interactive model of a sixteenth-century equitorium written in Elm
+# equatorium
+An interactive model of a sixteenth-century equatorium written in Elm

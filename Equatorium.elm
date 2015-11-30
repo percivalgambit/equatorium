@@ -1,4 +1,4 @@
-module Equitorium (Model, init, Action, update, view, inputs) where
+module Equatorium (Model, init, Action, update, view, inputs) where
 
 import Disk
 

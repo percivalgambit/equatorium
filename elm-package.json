@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "An interactive model of a sixteenth-century equitorium",
-    "repository": "https://github.com/percivalgambit/equitorium.git",
+    "summary": "An interactive model of a sixteenth-century equatorium",
+    "repository": "https://github.com/percivalgambit/equatorium.git",
     "license": "BSD3",
     "source-directories": [
         "."

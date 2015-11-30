@@ -1,6 +1,6 @@
 import StartApp exposing (start)
 
-import Equitorium exposing (init, update, view, inputs)
+import Equatorium exposing (init, update, view, inputs)
 
 
 app =
