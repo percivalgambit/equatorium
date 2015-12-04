@@ -1,4 +1,5 @@
-module Disk (Model, init, Action(..), update, view, mouseEventToDiskAction, Point) where
+module Disk (Model, init, Action(..), update, view, mouseEventToDiskAction,
+             getAnglePosition, Point) where
 
 import DragAndDrop
 import Effects exposing (Effects)
@@ -55,7 +56,7 @@ degreesToRadians : Degrees -> Radians
 degreesToRadians = degrees
 
 
-getAnglePosition : Model -> Point
+getAnglePosition : {disk | center:Point, radius:Float, angle:Degrees} -> Point
 getAnglePosition {center, radius, angle} =
     { x = center.x + radius * (sin <| degreesToRadians angle)
     , y = center.y - radius * (cos <| degreesToRadians angle)
