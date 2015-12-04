@@ -1180,83 +1180,6 @@ Elm.Color.make = function (_elm) {
                        ,gray: gray
                        ,darkGray: darkGray};
    return _elm.Color.values;
-};Elm.Date = Elm.Date || {};
-Elm.Date.make = function (_elm) {
-   "use strict";
-   _elm.Date = _elm.Date || {};
-   if (_elm.Date.values)
-   return _elm.Date.values;
-   var _op = {},
-   _N = Elm.Native,
-   _U = _N.Utils.make(_elm),
-   _L = _N.List.make(_elm),
-   $moduleName = "Date",
-   $Native$Date = Elm.Native.Date.make(_elm),
-   $Result = Elm.Result.make(_elm),
-   $Time = Elm.Time.make(_elm);
-   var millisecond = $Native$Date.millisecond;
-   var second = $Native$Date.second;
-   var minute = $Native$Date.minute;
-   var hour = $Native$Date.hour;
-   var dayOfWeek = $Native$Date.dayOfWeek;
-   var day = $Native$Date.day;
-   var month = $Native$Date.month;
-   var year = $Native$Date.year;
-   var fromTime = $Native$Date.fromTime;
-   var toTime = $Native$Date.toTime;
-   var fromString = $Native$Date.read;
-   var Dec = {ctor: "Dec"};
-   var Nov = {ctor: "Nov"};
-   var Oct = {ctor: "Oct"};
-   var Sep = {ctor: "Sep"};
-   var Aug = {ctor: "Aug"};
-   var Jul = {ctor: "Jul"};
-   var Jun = {ctor: "Jun"};
-   var May = {ctor: "May"};
-   var Apr = {ctor: "Apr"};
-   var Mar = {ctor: "Mar"};
-   var Feb = {ctor: "Feb"};
-   var Jan = {ctor: "Jan"};
-   var Sun = {ctor: "Sun"};
-   var Sat = {ctor: "Sat"};
-   var Fri = {ctor: "Fri"};
-   var Thu = {ctor: "Thu"};
-   var Wed = {ctor: "Wed"};
-   var Tue = {ctor: "Tue"};
-   var Mon = {ctor: "Mon"};
-   var Date = {ctor: "Date"};
-   _elm.Date.values = {_op: _op
-                      ,fromString: fromString
-                      ,toTime: toTime
-                      ,fromTime: fromTime
-                      ,year: year
-                      ,month: month
-                      ,day: day
-                      ,dayOfWeek: dayOfWeek
-                      ,hour: hour
-                      ,minute: minute
-                      ,second: second
-                      ,millisecond: millisecond
-                      ,Jan: Jan
-                      ,Feb: Feb
-                      ,Mar: Mar
-                      ,Apr: Apr
-                      ,May: May
-                      ,Jun: Jun
-                      ,Jul: Jul
-                      ,Aug: Aug
-                      ,Sep: Sep
-                      ,Oct: Oct
-                      ,Nov: Nov
-                      ,Dec: Dec
-                      ,Mon: Mon
-                      ,Tue: Tue
-                      ,Wed: Wed
-                      ,Thu: Thu
-                      ,Fri: Fri
-                      ,Sat: Sat
-                      ,Sun: Sun};
-   return _elm.Date.values;
 };Elm.Debug = Elm.Debug || {};
 Elm.Debug.make = function (_elm) {
    "use strict";
@@ -2433,7 +2356,7 @@ Elm.Disk.make = function (_elm) {
                         ,_1: $Effects.none};
               }();}
          _U.badCase($moduleName,
-         "between lines 72 and 118");
+         "between lines 73 and 119");
       }();
    });
    var Point = F2(function (a,b) {
@@ -2465,7 +2388,7 @@ Elm.Disk.make = function (_elm) {
               $Basics.toFloat(_v15._0),
               $Basics.toFloat(_v15._1));}
          _U.badCase($moduleName,
-         "on line 123, column 5 to 33");
+         "on line 124, column 5 to 33");
       }();
    };
    var mouseEventToDiskAction = F2(function (action,
@@ -2496,7 +2419,7 @@ Elm.Disk.make = function (_elm) {
                  model) ? $Maybe.Just(Select) : $Maybe.Nothing;
               }();}
          _U.badCase($moduleName,
-         "between lines 136 and 165");
+         "between lines 137 and 166");
       }();
    });
    var Model = F5(function (a,
@@ -2516,6 +2439,7 @@ Elm.Disk.make = function (_elm) {
                       ,update: update
                       ,view: view
                       ,mouseEventToDiskAction: mouseEventToDiskAction
+                      ,getAnglePosition: getAnglePosition
                       ,Model: Model
                       ,Point: Point
                       ,Rotate: Rotate
@@ -2927,17 +2851,30 @@ Elm.Equatorium.make = function (_elm) {
    _L = _N.List.make(_elm),
    $moduleName = "Equatorium",
    $Basics = Elm.Basics.make(_elm),
-   $Date = Elm.Date.make(_elm),
    $Disk = Elm.Disk.make(_elm),
    $DragAndDrop = Elm.DragAndDrop.make(_elm),
    $Effects = Elm.Effects.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
    $Svg = Elm.Svg.make(_elm),
    $Svg$Attributes = Elm.Svg.Attributes.make(_elm);
    var None = {ctor: "None"};
+   var SetDate = {ctor: "SetDate"};
+   var Day = function (a) {
+      return {ctor: "Day",_0: a};
+   };
+   var Month = function (a) {
+      return {ctor: "Month",_0: a};
+   };
+   var Year = function (a) {
+      return {ctor: "Year",_0: a};
+   };
    var Epicycle = function (a) {
       return {ctor: "Epicycle"
              ,_0: a};
@@ -2950,177 +2887,153 @@ Elm.Equatorium.make = function (_elm) {
       return {ctor: "Deferent"
              ,_0: a};
    };
-   var update = F2(function (action,
-   model) {
-      return function () {
-         switch (action.ctor)
-         {case "Deferent":
-            return function () {
-                 var _ = A2($Disk.update,
-                 action._0,
-                 model.earth);
-                 var newEarth = function () {
-                    switch (_.ctor)
-                    {case "_Tuple2": return _._0;}
-                    _U.badCase($moduleName,
-                    "on line 181, column 29 to 56");
-                 }();
-                 var $ = A2($Disk.update,
-                 action._0,
-                 model.epicycle),
-                 newEpicycle = $._0,
-                 epicycleFx = $._1;
-                 var $ = A2($Disk.update,
-                 action._0,
-                 model.deferentCircle),
-                 newDeferentCircle = $._0,
-                 deferentCircleFx = $._1;
-                 var $ = A2($Disk.update,
-                 action._0,
-                 model.deferent),
-                 newDeferent = $._0,
-                 deferentFx = $._1;
-                 return function () {
-                    switch (action._0.ctor)
-                    {case "Rotate":
-                       return {ctor: "_Tuple2"
-                              ,_0: _U.replace([["deferent"
-                                               ,newDeferent]
-                                              ,["deferentCircle"
-                                               ,newDeferentCircle]
-                                              ,["epicycle",newEpicycle]
-                                              ,["earth",newEarth]],
-                              model)
-                              ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
-                                                               Deferent,
-                                                               deferentFx)
-                                                               ,A2($Effects.map,
-                                                               DeferentCircle,
-                                                               deferentCircleFx)
-                                                               ,A2($Effects.map,
-                                                               Epicycle,
-                                                               epicycleFx)]))};}
-                    return {ctor: "_Tuple2"
-                           ,_0: _U.replace([["deferent"
-                                            ,newDeferent]],
-                           model)
-                           ,_1: A2($Effects.map,
-                           Deferent,
-                           deferentFx)};
-                 }();
-              }();
-            case "DeferentCircle":
-            return function () {
-                 var $ = A2($Disk.update,
-                 action._0,
-                 model.epicycle),
-                 newEpicycle = $._0,
-                 epicycleFx = $._1;
-                 var $ = A2($Disk.update,
-                 action._0,
-                 model.deferentCircle),
-                 newDeferentCircle = $._0,
-                 deferentCircleFx = $._1;
-                 return function () {
-                    switch (action._0.ctor)
-                    {case "Rotate":
-                       return {ctor: "_Tuple2"
-                              ,_0: _U.replace([["deferentCircle"
-                                               ,newDeferentCircle]
-                                              ,["epicycle",newEpicycle]],
-                              model)
-                              ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
-                                                               DeferentCircle,
-                                                               deferentCircleFx)
-                                                               ,A2($Effects.map,
-                                                               Epicycle,
-                                                               epicycleFx)]))};}
-                    return {ctor: "_Tuple2"
-                           ,_0: _U.replace([["deferentCircle"
-                                            ,newDeferentCircle]],
-                           model)
-                           ,_1: A2($Effects.map,
-                           DeferentCircle,
-                           deferentCircleFx)};
-                 }();
-              }();
-            case "Epicycle":
-            return function () {
-                 var $ = A2($Disk.update,
-                 action._0,
-                 model.epicycle),
-                 newEpicycle = $._0,
-                 epicycleFx = $._1;
-                 return {ctor: "_Tuple2"
-                        ,_0: _U.replace([["epicycle"
-                                         ,newEpicycle]],
-                        model)
-                        ,_1: A2($Effects.map,
-                        Epicycle,
-                        epicycleFx)};
-              }();
-            case "MouseEvent":
-            return function () {
-                 var deferentCircleAction = $Maybe.map(DeferentCircle)(A2($Disk.mouseEventToDiskAction,
-                 action._0,
-                 model.deferentCircle));
-                 var deferentAction = $Maybe.map(Deferent)(A2($Disk.mouseEventToDiskAction,
-                 action._0,
-                 model.deferent));
-                 var epicycleAction = $Maybe.map(Epicycle)(A2($Disk.mouseEventToDiskAction,
-                 action._0,
-                 model.epicycle));
-                 return function () {
-                    var _v14 = $Maybe.oneOf(_L.fromArray([epicycleAction
-                                                         ,deferentCircleAction
-                                                         ,deferentAction]));
-                    switch (_v14.ctor)
-                    {case "Just": return A2(update,
-                         _v14._0,
-                         model);
-                       case "Nothing":
-                       return {ctor: "_Tuple2"
-                              ,_0: model
-                              ,_1: $Effects.none};}
-                    _U.badCase($moduleName,
-                    "between lines 169 and 176");
-                 }();
-              }();
-            case "None":
-            return {ctor: "_Tuple2"
-                   ,_0: model
-                   ,_1: $Effects.none};}
-         _U.badCase($moduleName,
-         "between lines 159 and 227");
-      }();
-   });
    var view = F2(function (address,
-   _v16) {
+   _v0) {
       return function () {
          return function () {
+            var marsLongitudeText = function () {
+               var _v2 = _v0.meanEpicyclicAnomaly;
+               switch (_v2.ctor)
+               {case "Just":
+                  return function () {
+                       var marsDisk = {_: {}
+                                      ,angle: _v0.epicycle.angle - _v2._0
+                                      ,center: _v0.epicycle.center
+                                      ,radius: _v0.epicycle.radius};
+                       var marsPosition = $Disk.getAnglePosition(marsDisk);
+                       var marsLongitudeRadians = A2($Basics.atan2,
+                       marsPosition.y - _v0.zodiac.center.y,
+                       marsPosition.x - _v0.zodiac.center.x);
+                       var marsLongitude = marsLongitudeRadians * 180 / $Basics.pi;
+                       return $Html.text(A2($Basics._op["++"],
+                       "The longitude of mars is ",
+                       $Basics.toString(marsLongitude)));
+                    }();
+                  case "Nothing":
+                  return $Html.text("");}
+               _U.badCase($moduleName,
+               "between lines 451 and 471");
+            }();
+            var mars = function () {
+               var _v4 = _v0.meanEpicyclicAnomaly;
+               switch (_v4.ctor)
+               {case "Just":
+                  return function () {
+                       var marsDisk = {_: {}
+                                      ,angle: _v0.epicycle.angle - _v4._0
+                                      ,center: _v0.epicycle.center
+                                      ,radius: _v0.epicycle.radius};
+                       var marsPosition = $Disk.getAnglePosition(marsDisk);
+                       return A2($Svg.circle,
+                       _L.fromArray([$Svg$Attributes.cx($Basics.toString(marsPosition.x))
+                                    ,$Svg$Attributes.cy($Basics.toString(marsPosition.y))
+                                    ,$Svg$Attributes.r("5")
+                                    ,$Svg$Attributes.fill("#FF0000")]),
+                       _L.fromArray([]));
+                    }();
+                  case "Nothing":
+                  return A2($Svg.g,
+                    _L.fromArray([]),
+                    _L.fromArray([]));}
+               _U.badCase($moduleName,
+               "between lines 430 and 450");
+            }();
+            var earth = function () {
+               var _v6 = _v0.meanEpicyclicAnomaly;
+               switch (_v6.ctor)
+               {case "Just":
+                  return A2($Svg.circle,
+                    _L.fromArray([$Svg$Attributes.cx($Basics.toString(_v0.zodiac.center.x))
+                                 ,$Svg$Attributes.cy($Basics.toString(_v0.zodiac.center.y))
+                                 ,$Svg$Attributes.r("5")
+                                 ,$Svg$Attributes.fill("#0000FF")]),
+                    _L.fromArray([]));
+                  case "Nothing":
+                  return A2($Svg.g,
+                    _L.fromArray([]),
+                    _L.fromArray([]));}
+               _U.badCase($moduleName,
+               "between lines 418 and 429");
+            }();
+            var maybeToString = function (maybe) {
+               return $Maybe.withDefault("")(A2($Maybe.map,
+               $Basics.toString,
+               maybe));
+            };
+            var dateField = A2($Html.div,
+            _L.fromArray([]),
+            _L.fromArray([$Html.text("Select a date:")
+                         ,A2($Html.div,
+                         _L.fromArray([]),
+                         _L.fromArray([$Html.text("Year")
+                                      ,A2($Html.input,
+                                      _L.fromArray([$Html$Attributes.value(maybeToString(_v0.dateToSet.year))
+                                                   ,A3($Html$Events.on,
+                                                   "input",
+                                                   $Html$Events.targetValue,
+                                                   function ($) {
+                                                      return $Signal.message(address)(Year($));
+                                                   })]),
+                                      _L.fromArray([]))]))
+                         ,A2($Html.div,
+                         _L.fromArray([]),
+                         _L.fromArray([$Html.text("Month")
+                                      ,A2($Html.input,
+                                      _L.fromArray([$Html$Attributes.value(maybeToString(_v0.dateToSet.month))
+                                                   ,A3($Html$Events.on,
+                                                   "input",
+                                                   $Html$Events.targetValue,
+                                                   function ($) {
+                                                      return $Signal.message(address)(Month($));
+                                                   })]),
+                                      _L.fromArray([]))]))
+                         ,A2($Html.div,
+                         _L.fromArray([]),
+                         _L.fromArray([$Html.text("Day")
+                                      ,A2($Html.input,
+                                      _L.fromArray([$Html$Attributes.value(maybeToString(_v0.dateToSet.day))
+                                                   ,A3($Html$Events.on,
+                                                   "input",
+                                                   $Html$Events.targetValue,
+                                                   function ($) {
+                                                      return $Signal.message(address)(Day($));
+                                                   })]),
+                                      _L.fromArray([]))]))
+                         ,A2($Html.button,
+                         _L.fromArray([A2($Html$Events.onClick,
+                         address,
+                         SetDate)]),
+                         _L.fromArray([$Html.text("Set Date")]))]));
             var noAction = $Signal.forwardTo(address)($Basics.always(None));
-            return $Svg.svg(_L.fromArray([$Svg$Attributes.width($Basics.toString(_v16.zodiac.center.x + _v16.zodiac.radius))
-                                         ,$Svg$Attributes.height($Basics.toString(_v16.zodiac.center.y + _v16.zodiac.radius))]))($List.concat(_L.fromArray([A2($Disk.view,
-                                                                                                                                                           noAction,
-                                                                                                                                                           _v16.zodiac)
-                                                                                                                                                           ,A2($Disk.view,
-                                                                                                                                                           A2($Signal.forwardTo,
-                                                                                                                                                           address,
-                                                                                                                                                           Deferent),
-                                                                                                                                                           _v16.deferent)
-                                                                                                                                                           ,A2($Disk.view,
-                                                                                                                                                           A2($Signal.forwardTo,
-                                                                                                                                                           address,
-                                                                                                                                                           DeferentCircle),
-                                                                                                                                                           _v16.deferentCircle)
-                                                                                                                                                           ,A2($Disk.view,
-                                                                                                                                                           A2($Signal.forwardTo,
-                                                                                                                                                           address,
-                                                                                                                                                           Epicycle),
-                                                                                                                                                           _v16.epicycle)
-                                                                                                                                                           ,A2($Disk.view,
-                                                                                                                                                           noAction,
-                                                                                                                                                           _v16.earth)])));
+            var equatorium = $Svg.svg(_L.fromArray([$Svg$Attributes.width($Basics.toString(_v0.zodiac.center.x + _v0.zodiac.radius))
+                                                   ,$Svg$Attributes.height($Basics.toString(_v0.zodiac.center.y + _v0.zodiac.radius))]))($List.concat(_L.fromArray([A2($Disk.view,
+                                                                                                                                                                   noAction,
+                                                                                                                                                                   _v0.zodiac)
+                                                                                                                                                                   ,A2($Disk.view,
+                                                                                                                                                                   A2($Signal.forwardTo,
+                                                                                                                                                                   address,
+                                                                                                                                                                   Deferent),
+                                                                                                                                                                   _v0.deferent)
+                                                                                                                                                                   ,A2($Disk.view,
+                                                                                                                                                                   A2($Signal.forwardTo,
+                                                                                                                                                                   address,
+                                                                                                                                                                   DeferentCircle),
+                                                                                                                                                                   _v0.deferentCircle)
+                                                                                                                                                                   ,A2($Disk.view,
+                                                                                                                                                                   A2($Signal.forwardTo,
+                                                                                                                                                                   address,
+                                                                                                                                                                   Epicycle),
+                                                                                                                                                                   _v0.epicycle)
+                                                                                                                                                                   ,A2($Disk.view,
+                                                                                                                                                                   noAction,
+                                                                                                                                                                   _v0.earthDisk)
+                                                                                                                                                                   ,_L.fromArray([earth
+                                                                                                                                                                                 ,mars])])));
+            return A2($Html.div,
+            _L.fromArray([]),
+            _L.fromArray([equatorium
+                         ,dateField
+                         ,marsLongitudeText]));
          }();
       }();
    });
@@ -3136,209 +3049,208 @@ Elm.Equatorium.make = function (_elm) {
       n,
       xs)));
    });
-   var julianDayNumber = function (date) {
+   var julianDayNumber = function (_v8) {
       return function () {
-         var dateDay = $Date.day(date);
-         var dateCentury = A2($Basics._op["%"],
-         $Date.year(date),
-         100);
-         var dateCenturyYear = $Date.year(date) / 100 | 0;
-         var commonYears = _L.fromArray([15
-                                        ,17
-                                        ,18
-                                        ,19]);
-         var decemberTable = _L.range(335,
-         365);
-         var novemberTable = _L.range(305,
-         334);
-         var octoberTable = _L.range(274,
-         304);
-         var septemberTable = _L.range(244,
-         273);
-         var augustTable = _L.range(213,
-         243);
-         var julyTable = _L.range(182,
-         212);
-         var juneTable = _L.range(152,
-         181);
-         var mayTable = _L.range(121,
-         151);
-         var aprilTable = _L.range(91,
-         120);
-         var marchTable = _L.range(60,
-         90);
-         var februaryTable = _L.range(32,
-         60);
-         var januaryTable = _L.range(1,
-         31);
-         var dateMonthTable = function () {
-            var _v18 = $Date.month(date);
-            switch (_v18.ctor)
-            {case "Apr": return aprilTable;
-               case "Aug": return augustTable;
-               case "Dec":
-               return decemberTable;
-               case "Feb":
-               return februaryTable;
-               case "Jan": return januaryTable;
-               case "Jul": return julyTable;
-               case "Jun": return juneTable;
-               case "Mar": return marchTable;
-               case "May": return mayTable;
-               case "Nov":
-               return novemberTable;
-               case "Oct": return octoberTable;
-               case "Sep":
-               return septemberTable;}
-            _U.badCase($moduleName,
-            "between lines 113 and 126");
+         return function () {
+            var century = A2($Basics._op["%"],
+            _v8.year,
+            100);
+            var centuryYear = _v8.year / 100 | 0;
+            var commonYears = _L.fromArray([15
+                                           ,17
+                                           ,18
+                                           ,19]);
+            var decemberTable = _L.range(335,
+            365);
+            var novemberTable = _L.range(305,
+            334);
+            var octoberTable = _L.range(274,
+            304);
+            var septemberTable = _L.range(244,
+            273);
+            var augustTable = _L.range(213,
+            243);
+            var julyTable = _L.range(182,
+            212);
+            var juneTable = _L.range(152,
+            181);
+            var mayTable = _L.range(121,
+            151);
+            var aprilTable = _L.range(91,
+            120);
+            var marchTable = _L.range(60,
+            90);
+            var februaryTable = _L.range(32,
+            60);
+            var januaryTable = _L.range(1,
+            31);
+            var monthTable = function () {
+               var _v10 = _v8.month;
+               switch (_v10)
+               {case 1: return januaryTable;
+                  case 2: return februaryTable;
+                  case 3: return marchTable;
+                  case 4: return aprilTable;
+                  case 5: return mayTable;
+                  case 6: return juneTable;
+                  case 7: return julyTable;
+                  case 8: return augustTable;
+                  case 9: return septemberTable;
+                  case 10: return octoberTable;
+                  case 11: return novemberTable;
+                  case 12: return decemberTable;}
+               _U.badCase($moduleName,
+               "between lines 137 and 151");
+            }();
+            var centuryTable = _L.fromArray([0
+                                            ,366
+                                            ,731
+                                            ,1096
+                                            ,1461
+                                            ,1827
+                                            ,2192
+                                            ,2557
+                                            ,2922
+                                            ,3288
+                                            ,3653
+                                            ,4018
+                                            ,4383
+                                            ,4749
+                                            ,5114
+                                            ,5479
+                                            ,5844
+                                            ,6210
+                                            ,6575
+                                            ,6940
+                                            ,7305
+                                            ,7671
+                                            ,8036
+                                            ,8401
+                                            ,8766
+                                            ,9132
+                                            ,9497
+                                            ,9862
+                                            ,10227
+                                            ,10593
+                                            ,10958
+                                            ,11323
+                                            ,11688
+                                            ,12054
+                                            ,12419
+                                            ,12784
+                                            ,13149
+                                            ,13515
+                                            ,13880
+                                            ,14245
+                                            ,14610
+                                            ,14976
+                                            ,15341
+                                            ,15706
+                                            ,16071
+                                            ,16437
+                                            ,16802
+                                            ,17167
+                                            ,17532
+                                            ,17898
+                                            ,18263
+                                            ,18628
+                                            ,18993
+                                            ,19359
+                                            ,19724
+                                            ,20089
+                                            ,20454
+                                            ,20820
+                                            ,21185
+                                            ,21550
+                                            ,21915
+                                            ,22281
+                                            ,22646
+                                            ,23011
+                                            ,23376
+                                            ,23742
+                                            ,24107
+                                            ,24472
+                                            ,24837
+                                            ,25203
+                                            ,25568
+                                            ,25933
+                                            ,26298
+                                            ,26664
+                                            ,27029
+                                            ,27394
+                                            ,27759
+                                            ,28125
+                                            ,28490
+                                            ,28855
+                                            ,29220
+                                            ,29586
+                                            ,29951
+                                            ,30316
+                                            ,30681
+                                            ,31047
+                                            ,31412
+                                            ,31777
+                                            ,32142
+                                            ,32508
+                                            ,32873
+                                            ,33238
+                                            ,33603
+                                            ,33969
+                                            ,34334
+                                            ,34699
+                                            ,35064
+                                            ,35430
+                                            ,35795
+                                            ,36160]);
+            var centuryYearTable = _L.fromArray([1721057
+                                                ,1777582
+                                                ,1794107
+                                                ,1830632
+                                                ,1867157
+                                                ,1903682
+                                                ,1940207
+                                                ,1976732
+                                                ,2013257
+                                                ,2049782
+                                                ,2086307
+                                                ,2122832
+                                                ,2159357
+                                                ,2195882
+                                                ,2232407
+                                                ,2268923
+                                                ,2305447
+                                                ,2341972
+                                                ,2378496
+                                                ,2415020
+                                                ,2451544]);
+            var preliminaryDayNumber = A2(_op["!!"],
+            centuryYearTable,
+            centuryYear) + A2(_op["!!"],
+            centuryTable,
+            century) + A2(_op["!!"],
+            monthTable,
+            _v8.day);
+            var dayNumberWithCommonYear = A2($List.member,
+            centuryYear,
+            commonYears) && !_U.eq(century,
+            0) ? preliminaryDayNumber - 1 : preliminaryDayNumber;
+            var dayNumberWithLeapYear = _U.eq(A2($Basics._op["%"],
+            century,
+            4),
+            0) && _U.cmp(_v8.month,
+            3) > -1 ? A2($List.member,
+            centuryYear,
+            commonYears) && _U.eq(century,
+            0) ? dayNumberWithCommonYear : dayNumberWithCommonYear + 1 : dayNumberWithCommonYear;
+            return dayNumberWithLeapYear;
          }();
-         var centuryTable = _L.fromArray([0
-                                         ,366
-                                         ,731
-                                         ,1096
-                                         ,1461
-                                         ,1827
-                                         ,2192
-                                         ,2557
-                                         ,2922
-                                         ,3288
-                                         ,3653
-                                         ,4018
-                                         ,4383
-                                         ,4749
-                                         ,5114
-                                         ,5479
-                                         ,5844
-                                         ,6210
-                                         ,6575
-                                         ,6940
-                                         ,7305
-                                         ,7671
-                                         ,8036
-                                         ,8401
-                                         ,8766
-                                         ,9132
-                                         ,9497
-                                         ,9862
-                                         ,10227
-                                         ,10593
-                                         ,10958
-                                         ,11323
-                                         ,11688
-                                         ,12054
-                                         ,12419
-                                         ,12784
-                                         ,13149
-                                         ,13515
-                                         ,13880
-                                         ,14245
-                                         ,14610
-                                         ,14976
-                                         ,15341
-                                         ,15706
-                                         ,16071
-                                         ,16437
-                                         ,16802
-                                         ,17167
-                                         ,17532
-                                         ,17898
-                                         ,18263
-                                         ,18628
-                                         ,18993
-                                         ,19359
-                                         ,19724
-                                         ,20089
-                                         ,20454
-                                         ,20820
-                                         ,21185
-                                         ,21550
-                                         ,21915
-                                         ,22281
-                                         ,22646
-                                         ,23011
-                                         ,23376
-                                         ,23742
-                                         ,24107
-                                         ,24472
-                                         ,24837
-                                         ,25203
-                                         ,25568
-                                         ,25933
-                                         ,26298
-                                         ,26664
-                                         ,27029
-                                         ,27394
-                                         ,27759
-                                         ,28125
-                                         ,28490
-                                         ,28855
-                                         ,29220
-                                         ,29586
-                                         ,29951
-                                         ,30316
-                                         ,30681
-                                         ,31047
-                                         ,31412
-                                         ,31777
-                                         ,32142
-                                         ,32508
-                                         ,32873
-                                         ,33238
-                                         ,33603
-                                         ,33969
-                                         ,34334
-                                         ,34699
-                                         ,35064
-                                         ,35430
-                                         ,35795
-                                         ,36160]);
-         var centuryYearTable = _L.fromArray([1721057
-                                             ,1777582
-                                             ,1794107
-                                             ,1830632
-                                             ,1867157
-                                             ,1903682
-                                             ,1940207
-                                             ,1976732
-                                             ,2013257
-                                             ,2049782
-                                             ,2086307
-                                             ,2122832
-                                             ,2159357
-                                             ,2195882
-                                             ,2232407
-                                             ,2268923
-                                             ,2305447
-                                             ,2341972
-                                             ,2378496
-                                             ,2415020
-                                             ,2451544]);
-         var preliminaryDayNumber = A2(_op["!!"],
-         centuryYearTable,
-         dateCenturyYear) + A2(_op["!!"],
-         centuryTable,
-         dateCentury) + A2(_op["!!"],
-         dateMonthTable,
-         dateDay);
-         var dayNumberWithCommonYear = A2($List.member,
-         dateCenturyYear,
-         commonYears) && !_U.eq(dateCentury,
-         0) ? preliminaryDayNumber - 1 : preliminaryDayNumber;
-         var dayNumberWithLeapYear = _U.eq(A2($Basics._op["%"],
-         dateCentury,
-         4),
-         0) && _U.cmp(A2(_op["!!"],
-         dateMonthTable,
-         1),
-         60) > -1 ? A2($List.member,
-         dateCenturyYear,
-         commonYears) && _U.eq(dateCentury,
-         0) ? dayNumberWithCommonYear : dayNumberWithCommonYear + 1 : dayNumberWithCommonYear;
-         return dayNumberWithLeapYear + $Basics.toFloat(12 - $Date.hour(date)) / 24;
       }();
    };
    var init = function () {
+      var dateToSet = {_: {}
+                      ,day: $Maybe.Just(30)
+                      ,month: $Maybe.Just(5)
+                      ,year: $Maybe.Just(1982)};
       var scale = 3;
       var scaleDisk = function (disk) {
          return _U.replace([["center"
@@ -3350,15 +3262,15 @@ Elm.Equatorium.make = function (_elm) {
          disk);
       };
       var _ = $Disk.init({_: {}
-                         ,background: "Earth.png"
+                         ,background: "EarthDisk.png"
                          ,radius: 14
                          ,x: 125
                          ,y: 120});
-      var earth = function () {
+      var earthDisk = function () {
          switch (_.ctor)
          {case "_Tuple2": return _._0;}
          _U.badCase($moduleName,
-         "on line 35, column 13 to 82");
+         "on line 51, column 13 to 86");
       }();
       var $ = $Disk.init({_: {}
                          ,background: "Epicycle.png"
@@ -3390,14 +3302,17 @@ Elm.Equatorium.make = function (_elm) {
          switch (_.ctor)
          {case "_Tuple2": return _._0;}
          _U.badCase($moduleName,
-         "on line 27, column 13 to 84");
+         "on line 43, column 13 to 84");
       }();
       return {ctor: "_Tuple2"
              ,_0: {_: {}
+                  ,dateToSet: dateToSet
                   ,deferent: scaleDisk(deferent)
                   ,deferentCircle: scaleDisk(deferentCircle)
-                  ,earth: scaleDisk(earth)
+                  ,earthDisk: scaleDisk(earthDisk)
                   ,epicycle: scaleDisk(epicycle)
+                  ,meanEpicyclicAnomaly: $Maybe.Nothing
+                  ,scale: scale
                   ,zodiac: scaleDisk(zodiac)}
              ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
                                               Deferent,
@@ -3409,8 +3324,234 @@ Elm.Equatorium.make = function (_elm) {
                                               Epicycle,
                                               epicycleFx)]))};
    }();
+   var Date = F3(function (a,b,c) {
+      return {_: {}
+             ,day: c
+             ,month: b
+             ,year: a};
+   });
+   var update = F2(function (action,
+   model) {
+      return function () {
+         var dateToSet = model.dateToSet;
+         var sameModel = {ctor: "_Tuple2"
+                         ,_0: model
+                         ,_1: $Effects.none};
+         return function () {
+            switch (action.ctor)
+            {case "Day":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["dateToSet"
+                                       ,_U.replace([["day"
+                                                    ,$Result.toMaybe($String.toInt(action._0))]],
+                                       dateToSet)]],
+                      model)
+                      ,_1: $Effects.none};
+               case "Deferent":
+               return function () {
+                    var _ = A2($Disk.update,
+                    action._0,
+                    model.earthDisk);
+                    var newEarthDisk = function () {
+                       switch (_.ctor)
+                       {case "_Tuple2": return _._0;}
+                       _U.badCase($moduleName,
+                       "on line 216, column 41 to 72");
+                    }();
+                    var $ = A2($Disk.update,
+                    action._0,
+                    model.epicycle),
+                    newEpicycle = $._0,
+                    epicycleFx = $._1;
+                    var $ = A2($Disk.update,
+                    action._0,
+                    model.deferentCircle),
+                    newDeferentCircle = $._0,
+                    deferentCircleFx = $._1;
+                    var $ = A2($Disk.update,
+                    action._0,
+                    model.deferent),
+                    newDeferent = $._0,
+                    deferentFx = $._1;
+                    return function () {
+                       switch (action._0.ctor)
+                       {case "Rotate":
+                          return {ctor: "_Tuple2"
+                                 ,_0: _U.replace([["deferent"
+                                                  ,newDeferent]
+                                                 ,["deferentCircle"
+                                                  ,newDeferentCircle]
+                                                 ,["epicycle",newEpicycle]
+                                                 ,["earthDisk",newEarthDisk]
+                                                 ,["meanEpicyclicAnomaly"
+                                                  ,$Maybe.Nothing]],
+                                 model)
+                                 ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
+                                                                  Deferent,
+                                                                  deferentFx)
+                                                                  ,A2($Effects.map,
+                                                                  DeferentCircle,
+                                                                  deferentCircleFx)
+                                                                  ,A2($Effects.map,
+                                                                  Epicycle,
+                                                                  epicycleFx)]))};}
+                       return {ctor: "_Tuple2"
+                              ,_0: _U.replace([["deferent"
+                                               ,newDeferent]
+                                              ,["meanEpicyclicAnomaly"
+                                               ,$Maybe.Nothing]],
+                              model)
+                              ,_1: A2($Effects.map,
+                              Deferent,
+                              deferentFx)};
+                    }();
+                 }();
+               case "DeferentCircle":
+               return function () {
+                    var $ = A2($Disk.update,
+                    action._0,
+                    model.epicycle),
+                    newEpicycle = $._0,
+                    epicycleFx = $._1;
+                    var $ = A2($Disk.update,
+                    action._0,
+                    model.deferentCircle),
+                    newDeferentCircle = $._0,
+                    deferentCircleFx = $._1;
+                    return function () {
+                       switch (action._0.ctor)
+                       {case "Rotate":
+                          return {ctor: "_Tuple2"
+                                 ,_0: _U.replace([["deferentCircle"
+                                                  ,newDeferentCircle]
+                                                 ,["epicycle",newEpicycle]
+                                                 ,["meanEpicyclicAnomaly"
+                                                  ,$Maybe.Nothing]],
+                                 model)
+                                 ,_1: $Effects.batch(_L.fromArray([A2($Effects.map,
+                                                                  DeferentCircle,
+                                                                  deferentCircleFx)
+                                                                  ,A2($Effects.map,
+                                                                  Epicycle,
+                                                                  epicycleFx)]))};}
+                       return {ctor: "_Tuple2"
+                              ,_0: _U.replace([["deferentCircle"
+                                               ,newDeferentCircle]
+                                              ,["meanEpicyclicAnomaly"
+                                               ,$Maybe.Nothing]],
+                              model)
+                              ,_1: A2($Effects.map,
+                              DeferentCircle,
+                              deferentCircleFx)};
+                    }();
+                 }();
+               case "Epicycle":
+               return function () {
+                    var $ = A2($Disk.update,
+                    action._0,
+                    model.epicycle),
+                    newEpicycle = $._0,
+                    epicycleFx = $._1;
+                    return {ctor: "_Tuple2"
+                           ,_0: _U.replace([["epicycle"
+                                            ,newEpicycle]
+                                           ,["meanEpicyclicAnomaly"
+                                            ,$Maybe.Nothing]],
+                           model)
+                           ,_1: A2($Effects.map,
+                           Epicycle,
+                           epicycleFx)};
+                 }();
+               case "Month":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["dateToSet"
+                                       ,_U.replace([["month"
+                                                    ,$Result.toMaybe($String.toInt(action._0))]],
+                                       dateToSet)]],
+                      model)
+                      ,_1: $Effects.none};
+               case "MouseEvent":
+               return function () {
+                    var deferentCircleAction = $Maybe.map(DeferentCircle)(A2($Disk.mouseEventToDiskAction,
+                    action._0,
+                    model.deferentCircle));
+                    var deferentAction = $Maybe.map(Deferent)(A2($Disk.mouseEventToDiskAction,
+                    action._0,
+                    model.deferent));
+                    var epicycleAction = $Maybe.map(Epicycle)(A2($Disk.mouseEventToDiskAction,
+                    action._0,
+                    model.epicycle));
+                    return function () {
+                       var _v34 = $Maybe.oneOf(_L.fromArray([epicycleAction
+                                                            ,deferentCircleAction
+                                                            ,deferentAction]));
+                       switch (_v34.ctor)
+                       {case "Just": return A2(update,
+                            _v34._0,
+                            model);
+                          case "Nothing":
+                          return sameModel;}
+                       _U.badCase($moduleName,
+                       "between lines 206 and 211");
+                    }();
+                 }();
+               case "None": return sameModel;
+               case "SetDate":
+               return function () {
+                    var _v36 = model.dateToSet.year;
+                    switch (_v36.ctor)
+                    {case "Just":
+                       return function () {
+                            var _v38 = model.dateToSet.month;
+                            switch (_v38.ctor)
+                            {case "Just":
+                               return function () {
+                                    var _v40 = model.dateToSet.day;
+                                    switch (_v40.ctor)
+                                    {case "Just":
+                                       return {ctor: "_Tuple2"
+                                              ,_0: dateToEquatoriumPosition(A3(Date,
+                                              _v36._0,
+                                              _v38._0,
+                                              _v40._0))
+                                              ,_1: $Effects.none};
+                                       case "Nothing":
+                                       return sameModel;}
+                                    _U.badCase($moduleName,
+                                    "between lines 287 and 294");
+                                 }();
+                               case "Nothing":
+                               return sameModel;}
+                            _U.badCase($moduleName,
+                            "between lines 285 and 296");
+                         }();
+                       case "Nothing":
+                       return sameModel;}
+                    _U.badCase($moduleName,
+                    "between lines 283 and 298");
+                 }();
+               case "Year":
+               return {ctor: "_Tuple2"
+                      ,_0: _U.replace([["dateToSet"
+                                       ,_U.replace([["year"
+                                                    ,$Result.toMaybe($String.toInt(action._0))]],
+                                       dateToSet)]],
+                      model)
+                      ,_1: $Effects.none};}
+            _U.badCase($moduleName,
+            "between lines 196 and 299");
+         }();
+      }();
+   });
    var dateToEquatoriumPosition = function (date) {
       return function () {
+         var _ = init;
+         var initialModel = function () {
+            switch (_.ctor)
+            {case "_Tuple2": return _._0;}
+            _U.badCase($moduleName,
+            "on line 332, column 13 to 17");
+         }();
          var meanEpicyclicAnomalyAtEpoch = 346 + 9 / 60;
          var meanLongitudeAtEpoch = 293 + 33 / 60;
          var apogeeLongitudeAtEpoch = 148 + 37 / 60;
@@ -3421,28 +3562,71 @@ Elm.Equatorium.make = function (_elm) {
          var julianDaysSinceEpoch = julianDayNumber(date) - epoch;
          var julianCenturiesSinceEpoch = julianDaysSinceEpoch / 36525;
          var apogeeLongitude = apogeeLongitudeAtEpoch + rateOfPrecession * julianCenturiesSinceEpoch;
-         var meanLongitude = meanLongitudeAtEpoch + meanMotionInLongitude * julianDaysSinceEpoch;
-         var meanEpicyclicAnomaly = meanEpicyclicAnomalyAtEpoch + meanMotionInEpicyclicAnomaly * julianDaysSinceEpoch;
-         var _ = init;
-         var initialModel = function () {
+         var _ = A2(update,
+         Deferent(A2($Disk.Rotate,
+         initialModel.deferent.center,
+         $Basics.degrees(90 - apogeeLongitude))),
+         initialModel);
+         var setDeferentApogeeModel = function () {
             switch (_.ctor)
             {case "_Tuple2": return _._0;}
             _U.badCase($moduleName,
-            "on line 234, column 13 to 17");
+            "between lines 334 and 337");
          }();
-         return initialModel;
+         var meanLongitude = meanLongitudeAtEpoch + meanMotionInLongitude * julianDaysSinceEpoch;
+         var _ = function () {
+            var earthDisk = {_: {}
+                            ,angle: setDeferentApogeeModel.earthDisk.angle
+                            ,center: setDeferentApogeeModel.zodiac.center
+                            ,radius: 10 * setDeferentApogeeModel.scale};
+            var pointOnEarthDisk = $Disk.getAnglePosition(earthDisk);
+            var deferentCircle = {_: {}
+                                 ,angle: $Basics.degrees(90 - meanLongitude)
+                                 ,center: pointOnEarthDisk
+                                 ,radius: 25 * setDeferentApogeeModel.scale};
+            var pointOnDeferentCircle = $Disk.getAnglePosition(deferentCircle);
+            var deferentCircleAngle = (0 - $Basics.pi) / 2 - A2($Basics.atan2,
+            pointOnDeferentCircle.y - setDeferentApogeeModel.deferentCircle.center.y,
+            pointOnDeferentCircle.x - setDeferentApogeeModel.deferentCircle.center.x);
+            return A2(update,
+            DeferentCircle(A2($Disk.Rotate,
+            setDeferentApogeeModel.deferentCircle.center,
+            deferentCircleAngle)),
+            setDeferentApogeeModel);
+         }();
+         var setMeanMotionModel = function () {
+            switch (_.ctor)
+            {case "_Tuple2": return _._0;}
+            _U.badCase($moduleName,
+            "between lines 339 and 362");
+         }();
+         var meanEpicyclicAnomaly = meanEpicyclicAnomalyAtEpoch + meanMotionInEpicyclicAnomaly * julianDaysSinceEpoch;
+         return _U.replace([["dateToSet"
+                            ,{_: {}
+                             ,day: $Maybe.Just(date.day)
+                             ,month: $Maybe.Just(date.month)
+                             ,year: $Maybe.Just(date.year)}]
+                           ,["meanEpicyclicAnomaly"
+                            ,$Maybe.Just(meanEpicyclicAnomaly)]],
+         setMeanMotionModel);
       }();
    };
-   var Model = F5(function (a,
+   var Model = F8(function (a,
    b,
    c,
    d,
-   e) {
+   e,
+   f,
+   g,
+   h) {
       return {_: {}
+             ,dateToSet: g
              ,deferent: b
              ,deferentCircle: c
-             ,earth: e
+             ,earthDisk: e
              ,epicycle: d
+             ,meanEpicyclicAnomaly: h
+             ,scale: f
              ,zodiac: a};
    });
    _elm.Equatorium.values = {_op: _op
@@ -4594,6 +4778,740 @@ Elm.Html.make = function (_elm) {
                       ,menuitem: menuitem
                       ,menu: menu};
    return _elm.Html.values;
+};Elm.Html = Elm.Html || {};
+Elm.Html.Attributes = Elm.Html.Attributes || {};
+Elm.Html.Attributes.make = function (_elm) {
+   "use strict";
+   _elm.Html = _elm.Html || {};
+   _elm.Html.Attributes = _elm.Html.Attributes || {};
+   if (_elm.Html.Attributes.values)
+   return _elm.Html.Attributes.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Html.Attributes",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Json$Encode = Elm.Json.Encode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $String = Elm.String.make(_elm),
+   $VirtualDom = Elm.VirtualDom.make(_elm);
+   var attribute = $VirtualDom.attribute;
+   var contextmenu = function (value) {
+      return A2(attribute,
+      "contextmenu",
+      value);
+   };
+   var property = $VirtualDom.property;
+   var stringProperty = F2(function (name,
+   string) {
+      return A2(property,
+      name,
+      $Json$Encode.string(string));
+   });
+   var $class = function (name) {
+      return A2(stringProperty,
+      "className",
+      name);
+   };
+   var id = function (name) {
+      return A2(stringProperty,
+      "id",
+      name);
+   };
+   var title = function (name) {
+      return A2(stringProperty,
+      "title",
+      name);
+   };
+   var accesskey = function ($char) {
+      return A2(stringProperty,
+      "accessKey",
+      $String.fromChar($char));
+   };
+   var dir = function (value) {
+      return A2(stringProperty,
+      "dir",
+      value);
+   };
+   var draggable = function (value) {
+      return A2(stringProperty,
+      "draggable",
+      value);
+   };
+   var dropzone = function (value) {
+      return A2(stringProperty,
+      "dropzone",
+      value);
+   };
+   var itemprop = function (value) {
+      return A2(stringProperty,
+      "itemprop",
+      value);
+   };
+   var lang = function (value) {
+      return A2(stringProperty,
+      "lang",
+      value);
+   };
+   var tabindex = function (n) {
+      return A2(stringProperty,
+      "tabIndex",
+      $Basics.toString(n));
+   };
+   var charset = function (value) {
+      return A2(stringProperty,
+      "charset",
+      value);
+   };
+   var content = function (value) {
+      return A2(stringProperty,
+      "content",
+      value);
+   };
+   var httpEquiv = function (value) {
+      return A2(stringProperty,
+      "httpEquiv",
+      value);
+   };
+   var language = function (value) {
+      return A2(stringProperty,
+      "language",
+      value);
+   };
+   var src = function (value) {
+      return A2(stringProperty,
+      "src",
+      value);
+   };
+   var height = function (value) {
+      return A2(stringProperty,
+      "height",
+      $Basics.toString(value));
+   };
+   var width = function (value) {
+      return A2(stringProperty,
+      "width",
+      $Basics.toString(value));
+   };
+   var alt = function (value) {
+      return A2(stringProperty,
+      "alt",
+      value);
+   };
+   var preload = function (value) {
+      return A2(stringProperty,
+      "preload",
+      value);
+   };
+   var poster = function (value) {
+      return A2(stringProperty,
+      "poster",
+      value);
+   };
+   var kind = function (value) {
+      return A2(stringProperty,
+      "kind",
+      value);
+   };
+   var srclang = function (value) {
+      return A2(stringProperty,
+      "srclang",
+      value);
+   };
+   var sandbox = function (value) {
+      return A2(stringProperty,
+      "sandbox",
+      value);
+   };
+   var srcdoc = function (value) {
+      return A2(stringProperty,
+      "srcdoc",
+      value);
+   };
+   var type$ = function (value) {
+      return A2(stringProperty,
+      "type",
+      value);
+   };
+   var value = function (value) {
+      return A2(stringProperty,
+      "value",
+      value);
+   };
+   var placeholder = function (value) {
+      return A2(stringProperty,
+      "placeholder",
+      value);
+   };
+   var accept = function (value) {
+      return A2(stringProperty,
+      "accept",
+      value);
+   };
+   var acceptCharset = function (value) {
+      return A2(stringProperty,
+      "acceptCharset",
+      value);
+   };
+   var action = function (value) {
+      return A2(stringProperty,
+      "action",
+      value);
+   };
+   var autocomplete = function (bool) {
+      return A2(stringProperty,
+      "autocomplete",
+      bool ? "on" : "off");
+   };
+   var autosave = function (value) {
+      return A2(stringProperty,
+      "autosave",
+      value);
+   };
+   var enctype = function (value) {
+      return A2(stringProperty,
+      "enctype",
+      value);
+   };
+   var formaction = function (value) {
+      return A2(stringProperty,
+      "formAction",
+      value);
+   };
+   var list = function (value) {
+      return A2(stringProperty,
+      "list",
+      value);
+   };
+   var minlength = function (n) {
+      return A2(stringProperty,
+      "minLength",
+      $Basics.toString(n));
+   };
+   var maxlength = function (n) {
+      return A2(stringProperty,
+      "maxLength",
+      $Basics.toString(n));
+   };
+   var method = function (value) {
+      return A2(stringProperty,
+      "method",
+      value);
+   };
+   var name = function (value) {
+      return A2(stringProperty,
+      "name",
+      value);
+   };
+   var pattern = function (value) {
+      return A2(stringProperty,
+      "pattern",
+      value);
+   };
+   var size = function (n) {
+      return A2(stringProperty,
+      "size",
+      $Basics.toString(n));
+   };
+   var $for = function (value) {
+      return A2(stringProperty,
+      "htmlFor",
+      value);
+   };
+   var form = function (value) {
+      return A2(stringProperty,
+      "form",
+      value);
+   };
+   var max = function (value) {
+      return A2(stringProperty,
+      "max",
+      value);
+   };
+   var min = function (value) {
+      return A2(stringProperty,
+      "min",
+      value);
+   };
+   var step = function (n) {
+      return A2(stringProperty,
+      "step",
+      n);
+   };
+   var cols = function (n) {
+      return A2(stringProperty,
+      "cols",
+      $Basics.toString(n));
+   };
+   var rows = function (n) {
+      return A2(stringProperty,
+      "rows",
+      $Basics.toString(n));
+   };
+   var wrap = function (value) {
+      return A2(stringProperty,
+      "wrap",
+      value);
+   };
+   var usemap = function (value) {
+      return A2(stringProperty,
+      "useMap",
+      value);
+   };
+   var shape = function (value) {
+      return A2(stringProperty,
+      "shape",
+      value);
+   };
+   var coords = function (value) {
+      return A2(stringProperty,
+      "coords",
+      value);
+   };
+   var challenge = function (value) {
+      return A2(stringProperty,
+      "challenge",
+      value);
+   };
+   var keytype = function (value) {
+      return A2(stringProperty,
+      "keytype",
+      value);
+   };
+   var align = function (value) {
+      return A2(stringProperty,
+      "align",
+      value);
+   };
+   var cite = function (value) {
+      return A2(stringProperty,
+      "cite",
+      value);
+   };
+   var href = function (value) {
+      return A2(stringProperty,
+      "href",
+      value);
+   };
+   var target = function (value) {
+      return A2(stringProperty,
+      "target",
+      value);
+   };
+   var downloadAs = function (value) {
+      return A2(stringProperty,
+      "download",
+      value);
+   };
+   var hreflang = function (value) {
+      return A2(stringProperty,
+      "hreflang",
+      value);
+   };
+   var media = function (value) {
+      return A2(stringProperty,
+      "media",
+      value);
+   };
+   var ping = function (value) {
+      return A2(stringProperty,
+      "ping",
+      value);
+   };
+   var rel = function (value) {
+      return A2(stringProperty,
+      "rel",
+      value);
+   };
+   var datetime = function (value) {
+      return A2(stringProperty,
+      "datetime",
+      value);
+   };
+   var pubdate = function (value) {
+      return A2(stringProperty,
+      "pubdate",
+      value);
+   };
+   var start = function (n) {
+      return A2(stringProperty,
+      "start",
+      $Basics.toString(n));
+   };
+   var colspan = function (n) {
+      return A2(stringProperty,
+      "colSpan",
+      $Basics.toString(n));
+   };
+   var headers = function (value) {
+      return A2(stringProperty,
+      "headers",
+      value);
+   };
+   var rowspan = function (n) {
+      return A2(stringProperty,
+      "rowSpan",
+      $Basics.toString(n));
+   };
+   var scope = function (value) {
+      return A2(stringProperty,
+      "scope",
+      value);
+   };
+   var manifest = function (value) {
+      return A2(stringProperty,
+      "manifest",
+      value);
+   };
+   var boolProperty = F2(function (name,
+   bool) {
+      return A2(property,
+      name,
+      $Json$Encode.bool(bool));
+   });
+   var hidden = function (bool) {
+      return A2(boolProperty,
+      "hidden",
+      bool);
+   };
+   var contenteditable = function (bool) {
+      return A2(boolProperty,
+      "contentEditable",
+      bool);
+   };
+   var spellcheck = function (bool) {
+      return A2(boolProperty,
+      "spellcheck",
+      bool);
+   };
+   var async = function (bool) {
+      return A2(boolProperty,
+      "async",
+      bool);
+   };
+   var defer = function (bool) {
+      return A2(boolProperty,
+      "defer",
+      bool);
+   };
+   var scoped = function (bool) {
+      return A2(boolProperty,
+      "scoped",
+      bool);
+   };
+   var autoplay = function (bool) {
+      return A2(boolProperty,
+      "autoplay",
+      bool);
+   };
+   var controls = function (bool) {
+      return A2(boolProperty,
+      "controls",
+      bool);
+   };
+   var loop = function (bool) {
+      return A2(boolProperty,
+      "loop",
+      bool);
+   };
+   var $default = function (bool) {
+      return A2(boolProperty,
+      "default",
+      bool);
+   };
+   var seamless = function (bool) {
+      return A2(boolProperty,
+      "seamless",
+      bool);
+   };
+   var checked = function (bool) {
+      return A2(boolProperty,
+      "checked",
+      bool);
+   };
+   var selected = function (bool) {
+      return A2(boolProperty,
+      "selected",
+      bool);
+   };
+   var autofocus = function (bool) {
+      return A2(boolProperty,
+      "autofocus",
+      bool);
+   };
+   var disabled = function (bool) {
+      return A2(boolProperty,
+      "disabled",
+      bool);
+   };
+   var multiple = function (bool) {
+      return A2(boolProperty,
+      "multiple",
+      bool);
+   };
+   var novalidate = function (bool) {
+      return A2(boolProperty,
+      "noValidate",
+      bool);
+   };
+   var readonly = function (bool) {
+      return A2(boolProperty,
+      "readOnly",
+      bool);
+   };
+   var required = function (bool) {
+      return A2(boolProperty,
+      "required",
+      bool);
+   };
+   var ismap = function (value) {
+      return A2(boolProperty,
+      "isMap",
+      value);
+   };
+   var download = function (bool) {
+      return A2(boolProperty,
+      "download",
+      bool);
+   };
+   var reversed = function (bool) {
+      return A2(boolProperty,
+      "reversed",
+      bool);
+   };
+   var classList = function (list) {
+      return $class($String.join(" ")($List.map($Basics.fst)($List.filter($Basics.snd)(list))));
+   };
+   var style = function (props) {
+      return property("style")($Json$Encode.object($List.map(function (_v0) {
+         return function () {
+            switch (_v0.ctor)
+            {case "_Tuple2":
+               return {ctor: "_Tuple2"
+                      ,_0: _v0._0
+                      ,_1: $Json$Encode.string(_v0._1)};}
+            _U.badCase($moduleName,
+            "on line 156, column 35 to 57");
+         }();
+      })(props)));
+   };
+   var key = function (k) {
+      return A2(stringProperty,
+      "key",
+      k);
+   };
+   _elm.Html.Attributes.values = {_op: _op
+                                 ,key: key
+                                 ,style: style
+                                 ,$class: $class
+                                 ,classList: classList
+                                 ,id: id
+                                 ,title: title
+                                 ,hidden: hidden
+                                 ,type$: type$
+                                 ,value: value
+                                 ,checked: checked
+                                 ,placeholder: placeholder
+                                 ,selected: selected
+                                 ,accept: accept
+                                 ,acceptCharset: acceptCharset
+                                 ,action: action
+                                 ,autocomplete: autocomplete
+                                 ,autofocus: autofocus
+                                 ,autosave: autosave
+                                 ,disabled: disabled
+                                 ,enctype: enctype
+                                 ,formaction: formaction
+                                 ,list: list
+                                 ,maxlength: maxlength
+                                 ,minlength: minlength
+                                 ,method: method
+                                 ,multiple: multiple
+                                 ,name: name
+                                 ,novalidate: novalidate
+                                 ,pattern: pattern
+                                 ,readonly: readonly
+                                 ,required: required
+                                 ,size: size
+                                 ,$for: $for
+                                 ,form: form
+                                 ,max: max
+                                 ,min: min
+                                 ,step: step
+                                 ,cols: cols
+                                 ,rows: rows
+                                 ,wrap: wrap
+                                 ,href: href
+                                 ,target: target
+                                 ,download: download
+                                 ,downloadAs: downloadAs
+                                 ,hreflang: hreflang
+                                 ,media: media
+                                 ,ping: ping
+                                 ,rel: rel
+                                 ,ismap: ismap
+                                 ,usemap: usemap
+                                 ,shape: shape
+                                 ,coords: coords
+                                 ,src: src
+                                 ,height: height
+                                 ,width: width
+                                 ,alt: alt
+                                 ,autoplay: autoplay
+                                 ,controls: controls
+                                 ,loop: loop
+                                 ,preload: preload
+                                 ,poster: poster
+                                 ,$default: $default
+                                 ,kind: kind
+                                 ,srclang: srclang
+                                 ,sandbox: sandbox
+                                 ,seamless: seamless
+                                 ,srcdoc: srcdoc
+                                 ,reversed: reversed
+                                 ,start: start
+                                 ,align: align
+                                 ,colspan: colspan
+                                 ,rowspan: rowspan
+                                 ,headers: headers
+                                 ,scope: scope
+                                 ,async: async
+                                 ,charset: charset
+                                 ,content: content
+                                 ,defer: defer
+                                 ,httpEquiv: httpEquiv
+                                 ,language: language
+                                 ,scoped: scoped
+                                 ,accesskey: accesskey
+                                 ,contenteditable: contenteditable
+                                 ,contextmenu: contextmenu
+                                 ,dir: dir
+                                 ,draggable: draggable
+                                 ,dropzone: dropzone
+                                 ,itemprop: itemprop
+                                 ,lang: lang
+                                 ,spellcheck: spellcheck
+                                 ,tabindex: tabindex
+                                 ,challenge: challenge
+                                 ,keytype: keytype
+                                 ,cite: cite
+                                 ,datetime: datetime
+                                 ,pubdate: pubdate
+                                 ,manifest: manifest
+                                 ,property: property
+                                 ,attribute: attribute};
+   return _elm.Html.Attributes.values;
+};Elm.Html = Elm.Html || {};
+Elm.Html.Events = Elm.Html.Events || {};
+Elm.Html.Events.make = function (_elm) {
+   "use strict";
+   _elm.Html = _elm.Html || {};
+   _elm.Html.Events = _elm.Html.Events || {};
+   if (_elm.Html.Events.values)
+   return _elm.Html.Events.values;
+   var _op = {},
+   _N = Elm.Native,
+   _U = _N.Utils.make(_elm),
+   _L = _N.List.make(_elm),
+   $moduleName = "Html.Events",
+   $Basics = Elm.Basics.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $VirtualDom = Elm.VirtualDom.make(_elm);
+   var keyCode = A2($Json$Decode._op[":="],
+   "keyCode",
+   $Json$Decode.$int);
+   var targetChecked = A2($Json$Decode.at,
+   _L.fromArray(["target"
+                ,"checked"]),
+   $Json$Decode.bool);
+   var targetValue = A2($Json$Decode.at,
+   _L.fromArray(["target"
+                ,"value"]),
+   $Json$Decode.string);
+   var defaultOptions = $VirtualDom.defaultOptions;
+   var Options = F2(function (a,
+   b) {
+      return {_: {}
+             ,preventDefault: b
+             ,stopPropagation: a};
+   });
+   var onWithOptions = $VirtualDom.onWithOptions;
+   var on = $VirtualDom.on;
+   var messageOn = F3(function (name,
+   addr,
+   msg) {
+      return A3(on,
+      name,
+      $Json$Decode.value,
+      function (_v0) {
+         return function () {
+            return A2($Signal.message,
+            addr,
+            msg);
+         }();
+      });
+   });
+   var onClick = messageOn("click");
+   var onDoubleClick = messageOn("dblclick");
+   var onMouseMove = messageOn("mousemove");
+   var onMouseDown = messageOn("mousedown");
+   var onMouseUp = messageOn("mouseup");
+   var onMouseEnter = messageOn("mouseenter");
+   var onMouseLeave = messageOn("mouseleave");
+   var onMouseOver = messageOn("mouseover");
+   var onMouseOut = messageOn("mouseout");
+   var onBlur = messageOn("blur");
+   var onFocus = messageOn("focus");
+   var onSubmit = messageOn("submit");
+   var onKey = F3(function (name,
+   addr,
+   handler) {
+      return A3(on,
+      name,
+      keyCode,
+      function (code) {
+         return A2($Signal.message,
+         addr,
+         handler(code));
+      });
+   });
+   var onKeyUp = onKey("keyup");
+   var onKeyDown = onKey("keydown");
+   var onKeyPress = onKey("keypress");
+   _elm.Html.Events.values = {_op: _op
+                             ,onBlur: onBlur
+                             ,onFocus: onFocus
+                             ,onSubmit: onSubmit
+                             ,onKeyUp: onKeyUp
+                             ,onKeyDown: onKeyDown
+                             ,onKeyPress: onKeyPress
+                             ,onClick: onClick
+                             ,onDoubleClick: onDoubleClick
+                             ,onMouseMove: onMouseMove
+                             ,onMouseDown: onMouseDown
+                             ,onMouseUp: onMouseUp
+                             ,onMouseEnter: onMouseEnter
+                             ,onMouseLeave: onMouseLeave
+                             ,onMouseOver: onMouseOver
+                             ,onMouseOut: onMouseOut
+                             ,on: on
+                             ,onWithOptions: onWithOptions
+                             ,defaultOptions: defaultOptions
+                             ,targetValue: targetValue
+                             ,targetChecked: targetChecked
+                             ,keyCode: keyCode
+                             ,Options: Options};
+   return _elm.Html.Events.values;
 };Elm.Json = Elm.Json || {};
 Elm.Json.Decode = Elm.Json.Decode || {};
 Elm.Json.Decode.make = function (_elm) {
@@ -6399,51 +7317,6 @@ Elm.Native.Color.make = function(localRuntime) {
 
 	return localRuntime.Native.Color.values = {
 		toCss: toCss
-	};
-
-};
-Elm.Native.Date = {};
-Elm.Native.Date.make = function(localRuntime) {
-	localRuntime.Native = localRuntime.Native || {};
-	localRuntime.Native.Date = localRuntime.Native.Date || {};
-	if (localRuntime.Native.Date.values)
-	{
-		return localRuntime.Native.Date.values;
-	}
-
-	var Result = Elm.Result.make(localRuntime);
-
-	function dateNow()
-	{
-		return new window.Date;
-	}
-
-	function readDate(str)
-	{
-		var date = new window.Date(str);
-		return isNaN(date.getTime())
-			? Result.Err("unable to parse '" + str + "' as a date")
-			: Result.Ok(date);
-	}
-
-	var dayTable = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-	var monthTable =
-		["Jan", "Feb", "Mar", "Apr", "May", "Jun",
-		 "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-
-
-	return localRuntime.Native.Date.values = {
-		read    : readDate,
-		year    : function(d) { return d.getFullYear(); },
-		month   : function(d) { return { ctor:monthTable[d.getMonth()] }; },
-		day     : function(d) { return d.getDate(); },
-		hour    : function(d) { return d.getHours(); },
-		minute  : function(d) { return d.getMinutes(); },
-		second  : function(d) { return d.getSeconds(); },
-		millisecond: function (d) { return d.getMilliseconds(); },
-		toTime  : function(d) { return d.getTime(); },
-		fromTime: function(t) { return new window.Date(t); },
-		dayOfWeek : function(d) { return { ctor:dayTable[d.getDay()] }; }
 	};
 
 };
