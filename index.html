@@ -2901,18 +2901,20 @@ Elm.Equatorium.make = function (_elm) {
                                       ,center: _v0.epicycle.center
                                       ,radius: _v0.epicycle.radius};
                        var marsPosition = $Disk.getAnglePosition(marsDisk);
-                       var marsLongitudeRadians = A2($Basics.atan2,
+                       var marsLongitudeRadians = 0 - A2($Basics.atan2,
                        marsPosition.y - _v0.zodiac.center.y,
                        marsPosition.x - _v0.zodiac.center.x);
                        var marsLongitude = marsLongitudeRadians * 180 / $Basics.pi;
+                       var marsLongitudePositive = _U.cmp(marsLongitude,
+                       0) < 0 ? marsLongitude + 360 : marsLongitude;
                        return $Html.text(A2($Basics._op["++"],
                        "The longitude of mars is ",
-                       $Basics.toString(marsLongitude)));
+                       $Basics.toString(marsLongitudePositive)));
                     }();
                   case "Nothing":
                   return $Html.text("");}
                _U.badCase($moduleName,
-               "between lines 451 and 471");
+               "between lines 451 and 478");
             }();
             var mars = function () {
                var _v4 = _v0.meanEpicyclicAnomaly;
