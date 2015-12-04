@@ -459,12 +459,19 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
                         marsPosition =
                             Disk.getAnglePosition marsDisk
                         marsLongitudeRadians =
-                            atan2 (marsPosition.y - zodiac.center.y)
-                                  (marsPosition.x - zodiac.center.x)
+                            -(atan2 (marsPosition.y - zodiac.center.y)
+                                    (marsPosition.x - zodiac.center.x))
                         marsLongitude =
                             marsLongitudeRadians * 180/pi
+                        marsLongitudePositive =
+                            if marsLongitude < 0 then
+                                marsLongitude + 360
+                            else
+                                marsLongitude
+
                     in
-                        text <| "The longitude of mars is " ++ toString marsLongitude
+                        text <| "The longitude of mars is "
+                                ++ toString marsLongitudePositive
                 Nothing ->
                     text ""
 
