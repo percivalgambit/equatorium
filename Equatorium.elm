@@ -191,7 +191,10 @@ update action model =
             ( model
             , Effects.none
             )
-        dateToSet = model.dateToSet
+        dateToSet =
+            model.dateToSet
+        monthTable =
+            [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
     in
         case action of
             MouseEvent mouseEvent ->
@@ -286,9 +289,15 @@ update action model =
                             Just month ->
                                 case model.dateToSet.day of
                                     Just day ->
-                                        ( dateToEquatoriumPosition <| Date year month day
-                                        , Effects.none
-                                        )
+                                        if year `List.member` [0..2099]
+                                           && month `List.member` [1..12]
+                                           && day  `List.member` [1..(monthTable !! month)] then
+                                                ( dateToEquatoriumPosition
+                                                    <| Date year month day
+                                                , Effects.none
+                                                )
+                                        else
+                                            sameModel
                                     Nothing ->
                                         sameModel
                             Nothing ->
@@ -471,7 +480,8 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
 
                     in
                         text <| "The longitude of mars is "
-                                ++ toString marsLongitudePositive
+                                ++ (toString <| round marsLongitudePositive)
+                                ++ " degrees"
                 Nothing ->
                     text ""
 
