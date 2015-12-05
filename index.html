@@ -2909,12 +2909,14 @@ Elm.Equatorium.make = function (_elm) {
                        0) < 0 ? marsLongitude + 360 : marsLongitude;
                        return $Html.text(A2($Basics._op["++"],
                        "The longitude of mars is ",
-                       $Basics.toString(marsLongitudePositive)));
+                       A2($Basics._op["++"],
+                       $Basics.toString($Basics.round(marsLongitudePositive)),
+                       " degrees")));
                     }();
                   case "Nothing":
                   return $Html.text("");}
                _U.badCase($moduleName,
-               "between lines 451 and 478");
+               "between lines 460 and 488");
             }();
             var mars = function () {
                var _v4 = _v0.meanEpicyclicAnomaly;
@@ -2938,7 +2940,7 @@ Elm.Equatorium.make = function (_elm) {
                     _L.fromArray([]),
                     _L.fromArray([]));}
                _U.badCase($moduleName,
-               "between lines 430 and 450");
+               "between lines 439 and 459");
             }();
             var earth = function () {
                var _v6 = _v0.meanEpicyclicAnomaly;
@@ -2955,7 +2957,7 @@ Elm.Equatorium.make = function (_elm) {
                     _L.fromArray([]),
                     _L.fromArray([]));}
                _U.badCase($moduleName,
-               "between lines 418 and 429");
+               "between lines 427 and 438");
             }();
             var maybeToString = function (maybe) {
                return $Maybe.withDefault("")(A2($Maybe.map,
@@ -3335,6 +3337,18 @@ Elm.Equatorium.make = function (_elm) {
    var update = F2(function (action,
    model) {
       return function () {
+         var monthTable = _L.fromArray([31
+                                       ,29
+                                       ,31
+                                       ,30
+                                       ,31
+                                       ,30
+                                       ,31
+                                       ,31
+                                       ,30
+                                       ,31
+                                       ,30
+                                       ,31]);
          var dateToSet = model.dateToSet;
          var sameModel = {ctor: "_Tuple2"
                          ,_0: model
@@ -3358,7 +3372,7 @@ Elm.Equatorium.make = function (_elm) {
                        switch (_.ctor)
                        {case "_Tuple2": return _._0;}
                        _U.badCase($moduleName,
-                       "on line 216, column 41 to 72");
+                       "on line 219, column 41 to 72");
                     }();
                     var $ = A2($Disk.update,
                     action._0,
@@ -3494,7 +3508,7 @@ Elm.Equatorium.make = function (_elm) {
                           case "Nothing":
                           return sameModel;}
                        _U.badCase($moduleName,
-                       "between lines 206 and 211");
+                       "between lines 209 and 214");
                     }();
                  }();
                case "None": return sameModel;
@@ -3511,26 +3525,37 @@ Elm.Equatorium.make = function (_elm) {
                                     var _v40 = model.dateToSet.day;
                                     switch (_v40.ctor)
                                     {case "Just":
-                                       return {ctor: "_Tuple2"
-                                              ,_0: dateToEquatoriumPosition(A3(Date,
-                                              _v36._0,
-                                              _v38._0,
-                                              _v40._0))
-                                              ,_1: $Effects.none};
+                                       return A2($List.member,
+                                         _v36._0,
+                                         _L.range(0,
+                                         2099)) && (A2($List.member,
+                                         _v38._0,
+                                         _L.range(1,
+                                         12)) && A2($List.member,
+                                         _v40._0,
+                                         _L.range(1,
+                                         A2(_op["!!"],
+                                         monthTable,
+                                         _v38._0)))) ? {ctor: "_Tuple2"
+                                                       ,_0: dateToEquatoriumPosition(A3(Date,
+                                                       _v36._0,
+                                                       _v38._0,
+                                                       _v40._0))
+                                                       ,_1: $Effects.none} : sameModel;
                                        case "Nothing":
                                        return sameModel;}
                                     _U.badCase($moduleName,
-                                    "between lines 287 and 294");
+                                    "between lines 290 and 303");
                                  }();
                                case "Nothing":
                                return sameModel;}
                             _U.badCase($moduleName,
-                            "between lines 285 and 296");
+                            "between lines 288 and 305");
                          }();
                        case "Nothing":
                        return sameModel;}
                     _U.badCase($moduleName,
-                    "between lines 283 and 298");
+                    "between lines 286 and 307");
                  }();
                case "Year":
                return {ctor: "_Tuple2"
@@ -3541,7 +3566,7 @@ Elm.Equatorium.make = function (_elm) {
                       model)
                       ,_1: $Effects.none};}
             _U.badCase($moduleName,
-            "between lines 196 and 299");
+            "between lines 199 and 308");
          }();
       }();
    });
@@ -3552,7 +3577,7 @@ Elm.Equatorium.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._0;}
             _U.badCase($moduleName,
-            "on line 332, column 13 to 17");
+            "on line 341, column 13 to 17");
          }();
          var meanEpicyclicAnomalyAtEpoch = 346 + 9 / 60;
          var meanLongitudeAtEpoch = 293 + 33 / 60;
@@ -3573,7 +3598,7 @@ Elm.Equatorium.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._0;}
             _U.badCase($moduleName,
-            "between lines 334 and 337");
+            "between lines 343 and 346");
          }();
          var meanLongitude = meanLongitudeAtEpoch + meanMotionInLongitude * julianDaysSinceEpoch;
          var _ = function () {
@@ -3600,7 +3625,7 @@ Elm.Equatorium.make = function (_elm) {
             switch (_.ctor)
             {case "_Tuple2": return _._0;}
             _U.badCase($moduleName,
-            "between lines 339 and 362");
+            "between lines 348 and 371");
          }();
          var meanEpicyclicAnomaly = meanEpicyclicAnomalyAtEpoch + meanMotionInEpicyclicAnomaly * julianDaysSinceEpoch;
          return _U.replace([["dateToSet"
