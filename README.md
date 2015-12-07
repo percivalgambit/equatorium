@@ -3,7 +3,7 @@ An interactive model of a sixteenth-century equatorium written in Elm.  This mod
 
 This has been tested on Firefox and Google Chrome.
 
-See percivalgambit.github.io/equatorium for a live demo.
+See [percivalgambit.github.io/equatorium](percivalgambit.github.io/equatorium) for a live demo.
 
 ## Instructions
 The model of the equatorium can be manipulated by clicking and holding it and dragging with the mouse.  If the epicycle, deferent circle, or outer deferent is selected, then when the mouse is dragged, parts of the equatorium will rotate.  Additionally, the input boxes at the bottom of the screen can be used to select a date in the common era, and when the button at the bottom of the screen is pressed, the equatorium will change to reflect the position of Mars relative to the Earth at that date.  A blue dot that represents the Earth, a red dot that represents Mars, and text displaying the longitude of Mars at that date will also appear on the equatorium.
