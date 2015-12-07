@@ -3,16 +3,21 @@ module Geometry (Degrees, Radians, Point, Circle, radiansToDegrees,
                  rotateAboutPoint, getPointOnCircle, getAngleOnCircle,
                  withinCircle) where
 
+
 type alias Degrees = Float
 
+
 type alias Radians = Float
+
 
 type alias Point =
     { x : Float
     , y : Float
     }
 
-type alias Circle circle = { circle | center : Point, radius : Float }
+
+type alias Circle circle =
+    { circle | center : Point, radius : Float }
 
 
 radiansToDegrees : Radians -> Degrees
@@ -38,6 +43,7 @@ getAngleBetweenPoints fixedPoint origin destination =
     let
         angle1 =
             atan2 (destination.y - fixedPoint.y) (destination.x - fixedPoint.x)
+
         angle2 =
             atan2 (origin.y - fixedPoint.y) (origin.x - fixedPoint.x)
     in
@@ -48,17 +54,21 @@ rotateAboutPoint rotationCenter angle =
     let
         translateToOrigin {x, y} =
             { x = x - rotationCenter.x
-            , y = y - rotationCenter.y }
+            , y = y - rotationCenter.y
+            }
+
         rotateAboutOrigin {x, y} =
             { x = x * cos angle - y * sin angle
-            , y = x * sin angle + y * cos angle }
+            , y = x * sin angle + y * cos angle
+            }
+
         translateBack {x, y} =
             { x = x + rotationCenter.x
-            , y = y + rotationCenter.y }
+            , y = y + rotationCenter.y
+            }
+
         doRotation =
-            translateToOrigin
-            >> rotateAboutOrigin
-            >> translateBack
+            translateToOrigin >> rotateAboutOrigin >> translateBack
     in
         doRotation
 

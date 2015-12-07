@@ -5,7 +5,6 @@ import Geometry exposing (Radians, Point, radiansToDegrees, degreesToRadians,
                           getPointOnCircle, getAngleOnCircle)
 
 import DragAndDrop
-import Effects exposing (Effects)
 import Html exposing (Html, button, div, form, input, text)
 import Html.Attributes exposing (value)
 import Html.Events exposing (on, onClick, targetValue)
@@ -31,6 +30,7 @@ type alias Model =
     , meanEpicyclicAnomaly : Maybe Radians
     }
 
+
 type alias Date =
     { year : Int
     , month : Int
@@ -38,24 +38,49 @@ type alias Date =
     }
 
 
-init : (Model, Effects Action)
+init : Model
 init =
     let
         zodiac =
             Disk.init
-                { x = 125, y = 125, radius = 110, background = "Zodiac.png" }
+                { x = 125
+                , y = 125
+                , radius = 110
+                , background = "Zodiac.png"
+                }
+
         deferent =
             Disk.init
-                { x = 125, y = 125, radius = 98, background = "Deferent.png" }
+                { x = 125
+                , y = 125
+                , radius = 98
+                , background = "Deferent.png"
+                }
+
         deferentCircle =
             Disk.init
-                { x = 125, y = 120, radius = 90, background = "DeferentCircle.png" }
+                { x = 125
+                , y = 120
+                , radius = 90
+                , background = "DeferentCircle.png"
+                }
+
         epicycle =
             Disk.init
-                { x = 125, y = 70, radius = 35, background = "Epicycle.png" }
+                { x = 125
+                , y = 70
+                , radius = 35
+                , background = "Epicycle.png"
+                }
+
         earthDisk =
             Disk.init
-                { x = 125, y = 120, radius = 14, background = "EarthDisk.png" }
+                { x = 125
+                , y = 120
+                , radius = 14
+                , background = "EarthDisk.png"
+                }
+
         scale =
             3
 
@@ -66,29 +91,26 @@ init =
                 }
 
         scaleDisk disk =
-            { disk | center <- Point (disk.center.x * scale) (disk.center.y * scale)
-            ,        radius <- disk.radius * scale
-            }
-
-        model =
-            { zodiac = scaleDisk zodiac
-            , deferent = scaleDisk deferent
-            , deferentCircle = scaleDisk deferentCircle
-            , epicycle = scaleDisk epicycle
-            , earthDisk = scaleDisk earthDisk
-            , scale = scale
-            , dateToSet = dateToSet
-            , meanEpicyclicAnomaly = Nothing
+            { disk 
+                | center = Point (disk.center.x * scale) (disk.center.y * scale)
+                , radius = disk.radius * scale
             }
     in
-        ( model
-        , Effects.none
-        )
+        { zodiac = scaleDisk zodiac
+        , deferent = scaleDisk deferent
+        , deferentCircle = scaleDisk deferentCircle
+        , epicycle = scaleDisk epicycle
+        , earthDisk = scaleDisk earthDisk
+        , scale = scale
+        , dateToSet = dateToSet
+        , meanEpicyclicAnomaly = Nothing
+        }
 
 
 -- Index operator for lists of numbers
 (!!) : List number -> Int -> number
-xs !! n  = Maybe.withDefault -1 <| List.head (List.drop n xs)
+(!!) xs n  =
+    Maybe.withDefault -1 <| List.head (List.drop n xs)
 infixl 9 !!
 
 
@@ -100,6 +122,7 @@ julianDayNumber {year, month, day} =
             , 1976732, 2013257, 2049782, 2086307, 2122832, 2159357, 2195882
             , 2232407, 2268923, 2305447, 2341972, 2378496, 2415020, 2451544
             ]
+
         centuryTable =
             [ 0,     366,   731,   1096,  1461,  1827,  2192,  2557,  2922,  3288
             , 3653,  4018,  4383,  4749,  5114,  5479,  5844,  6210,  6575,  6940
@@ -112,30 +135,43 @@ julianDayNumber {year, month, day} =
             , 29220, 29586, 29951, 30316, 30681, 31047, 31412, 31777, 32142, 32508
             , 32873, 33238, 33603, 33969, 34334, 34699, 35064, 35430, 35795, 36160
             ]
+
         januaryTable =
             [1..31]
+
         februaryTable =
             [32..60]
+
         marchTable =
             [60..90]
+
         aprilTable =
             [91..120]
+
         mayTable =
             [121..151]
+
         juneTable =
             [152..181]
+
         julyTable =
             [182..212]
+
         augustTable =
             [213..243]
+
         septemberTable =
             [244..273]
+
         octoberTable =
             [274..304]
+
         novemberTable =
             [305..334]
+
         decemberTable =
             [335..365]
+
         commonYears =
             [ 15, 17, 18, 19 ]
 
@@ -152,18 +188,22 @@ julianDayNumber {year, month, day} =
             10 -> octoberTable
             11 -> novemberTable
             12 -> decemberTable
+            _ -> []
 
         centuryYear = year // 100
+
         century = year % 100
 
         preliminaryDayNumber = (centuryYearTable !! centuryYear)
                                + (centuryTable !! century)
                                + (monthTable !! day)
+
         dayNumberWithCommonYear =
             if centuryYear `List.member` commonYears && century /= 0 then
                 preliminaryDayNumber - 1
             else
                 preliminaryDayNumber
+
         dayNumberWithLeapYear =
             if century % 4 == 0 && month >= 3 then
                 if centuryYear `List.member` commonYears && century == 0 then
@@ -175,10 +215,11 @@ julianDayNumber {year, month, day} =
     in
         dayNumberWithLeapYear
 
+
 -- UPDATE
 
-type Action =
-    MouseEvent DragAndDrop.MouseEvent
+type Action
+    = MouseEvent DragAndDrop.MouseEvent
     | Deferent Disk.Action
     | DeferentCircle Disk.Action
     | Epicycle Disk.Action
@@ -189,15 +230,12 @@ type Action =
     | None
 
 
-update : Action -> Model -> (Model, Effects Action)
+update : Action -> Model -> Model
 update action model =
     let
-        sameModel =
-            ( model
-            , Effects.none
-            )
         dateToSet =
             model.dateToSet
+
         monthTable =
             [ 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 ]
     in
@@ -206,8 +244,10 @@ update action model =
                 let
                     epicycleAction =
                         Maybe.map Epicycle <| Disk.mouseEventToDiskAction mouseEvent model.epicycle
+
                     deferentAction =
                         Maybe.map Deferent <| Disk.mouseEventToDiskAction mouseEvent model.deferent
+
                     deferentCircleAction =
                         Maybe.map DeferentCircle <| Disk.mouseEventToDiskAction mouseEvent model.deferentCircle
                 in
@@ -215,95 +255,127 @@ update action model =
                         Just act ->
                             update act model
                         Nothing ->
-                            sameModel
+                            model
+
             Deferent act ->
                 let
                     newDeferent = Disk.update act model.deferent
+
                     newDeferentCircle = Disk.update act model.deferentCircle
+
                     newEpicycle = Disk.update act model.epicycle
+
                     newEarthDisk = Disk.update act model.earthDisk
                 in
                     case act of
                         Disk.Rotate _ _ ->
-                            ( { model | deferent <- newDeferent
-                                      , deferentCircle <- newDeferentCircle
-                                      , epicycle <- newEpicycle
-                                      , earthDisk <- newEarthDisk
-                                      , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.none
-                            )
+                            { model
+                                | deferent = newDeferent
+                                , deferentCircle = newDeferentCircle
+                                , epicycle = newEpicycle
+                                , earthDisk = newEarthDisk
+                                , meanEpicyclicAnomaly = Nothing
+                            }
+
                         _ ->
-                            ( { model | deferent <- newDeferent
-                                      , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.none
-                            )
+                            { model
+                                | deferent = newDeferent
+                                , meanEpicyclicAnomaly = Nothing
+                            }
+
             DeferentCircle act ->
                 let
                     newDeferentCircle = Disk.update act model.deferentCircle
+
                     newEpicycle = Disk.update act model.epicycle
                 in
                     case act of
                         Disk.Rotate _ _ ->
-                            ( { model | deferentCircle <- newDeferentCircle
-                                      , epicycle <- newEpicycle
-                                      , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.none
-                            )
+                            { model
+                                | deferentCircle = newDeferentCircle
+                                , epicycle = newEpicycle
+                                , meanEpicyclicAnomaly = Nothing
+                            }
+
                         _ ->
-                            ( { model | deferentCircle <- newDeferentCircle
-                                      , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.none
-                            )
+                            { model
+                                | deferentCircle = newDeferentCircle
+                                , meanEpicyclicAnomaly = Nothing
+                            }
+
             Epicycle act ->
                 let
                     newEpicycle = Disk.update act model.epicycle
                 in
-                    ( { model | epicycle <- newEpicycle
-                              , meanEpicyclicAnomaly <- Nothing }
-                    , Effects.none
-                    )
+                    { model
+                        | epicycle = newEpicycle
+                        , meanEpicyclicAnomaly = Nothing
+                    }
+
             Year year ->
-                ( { model | dateToSet <-
-                    { dateToSet | year <- Result.toMaybe <| String.toInt year } 
-                  }
-                , Effects.none
-                )
+                { model | dateToSet =
+                    { dateToSet | year = Result.toMaybe <| String.toInt year } 
+                }
+
             Month month ->
-                ( { model | dateToSet <-
-                    { dateToSet | month <- Result.toMaybe <| String.toInt month } 
-                  }
-                , Effects.none
-                )
+                { model | dateToSet =
+                    { dateToSet | month = Result.toMaybe <| String.toInt month } 
+                }
+
             Day day ->
-                ( { model | dateToSet <-
-                    { dateToSet | day <- Result.toMaybe <| String.toInt day } 
-                  }
-                , Effects.none
-                )
+                { model | dateToSet =
+                    { dateToSet | day = Result.toMaybe <| String.toInt day } 
+                }
+
             SetDate ->
-                case model.dateToSet.year of
-                    Just year ->
-                        case model.dateToSet.month of
+                let
+                    falseToNothing maybeBool =
+                        case maybeBool of
+                            Just True ->
+                                Just True
+
+                            _ ->
+                                Nothing
+
+                    validateMaybe condition maybe =
+                        (Maybe.map condition maybe |> falseToNothing) 
+                            `Maybe.andThen` (always maybe)
+
+                    validateYear maybeYear =
+                        validateMaybe (flip List.member [0..2099]) maybeYear
+
+                    validateMonth maybeMonth = 
+                        validateMaybe (flip List.member [1..12]) maybeMonth
+
+                    validateDay maybeDay maybeMonth =
+                        case maybeMonth of
                             Just month ->
-                                case model.dateToSet.day of
-                                    Just day ->
-                                        if year `List.member` [0..2099]
-                                           && month `List.member` [1..12]
-                                           && day  `List.member` [1..(monthTable !! month)] then
-                                                ( dateToEquatoriumPosition
-                                                    <| Date year month day
-                                                , Effects.none
-                                                )
-                                        else
-                                            sameModel
-                                    Nothing ->
-                                        sameModel
+                                validateMaybe
+                                    (flip List.member [1..(monthTable !! month)])
+                                    maybeDay
+
                             Nothing ->
-                                sameModel
-                    Nothing ->
-                        sameModel
+                                Nothing
+
+                    equatoriumPosition year month day =
+                        Date year month day |> dateToEquatoriumPosition
+
+                    maybeNewModel =
+                        Maybe.map3 
+                            equatoriumPosition
+                            (validateYear model.dateToSet.year)
+                            (validateMonth model.dateToSet.month)
+                            (validateDay model.dateToSet.day model.dateToSet.month)
+                in
+                    case maybeNewModel of
+                        Just newModel ->
+                            newModel
+
+                        Nothing ->
+                            model
+
             None ->
-                sameModel
+                model
 
 
 dateToEquatoriumPosition : Date -> Model
@@ -311,69 +383,95 @@ dateToEquatoriumPosition date =
     let
         epoch =
             2415020
+
         meanMotionInLongitude =
             0.52407116
+
         meanMotionInEpicyclicAnomaly =
             0.46157618
+
         rateOfPrecession =
             1.807
+
         apogeeLongitudeAtEpoch =
             148 + (37/60)
+
         meanLongitudeAtEpoch =
             293 + (33/60)
+
         meanEpicyclicAnomalyAtEpoch =
             346 + (9/60)
 
         julianDaysSinceEpoch =
             julianDayNumber date - epoch
+
         julianCenturiesSinceEpoch =
             julianDaysSinceEpoch / 36525
+
         apogeeLongitude =
             apogeeLongitudeAtEpoch + rateOfPrecession * julianCenturiesSinceEpoch
+
         meanLongitude =
             meanLongitudeAtEpoch + meanMotionInLongitude * julianDaysSinceEpoch
+
         meanEpicyclicAnomaly =
             meanEpicyclicAnomalyAtEpoch + meanMotionInEpicyclicAnomaly * julianDaysSinceEpoch
 
-        (initialModel, _) =
+        initialModel =
             init
-        (setDeferentApogeeModel, _) =
-            update
-                (Deferent <| Disk.Rotate initialModel.deferent.center 
-                                         (degreesToRadians <| 90 - apogeeLongitude))
-                initialModel
-        (setMeanMotionModel, _) =
+
+        setDeferentApogeeModel =
+            let
+                deferentAction =
+                    Disk.Rotate 
+                        initialModel.deferent.center 
+                        (degreesToRadians <| 90 - apogeeLongitude)
+            in
+                update (Deferent deferentAction) initialModel
+
+        setMeanMotionModel =
             let
                 earthCircle =
                     { center = setDeferentApogeeModel.zodiac.center
                     , radius = 10 * setDeferentApogeeModel.scale
                     }
+
                 earthAngle =
                     setDeferentApogeeModel.earthDisk.angle
+
                 pointOnEarthDisk =
                     getPointOnCircle earthCircle earthAngle
+
                 deferentCircle =
                     { center = pointOnEarthDisk
                     , radius = 25 * setDeferentApogeeModel.scale
                     }
+
                 deferentAngle = 
                     degreesToRadians <| 90 - meanLongitude
+
                 pointOnDeferentCircle =
                     getPointOnCircle deferentCircle <| degreesToRadians deferentAngle
+
                 deferentCircleAngle =
-                    getAngleOnCircle setDeferentApogeeModel.deferentCircle pointOnDeferentCircle
+                    negate <| getAngleOnCircle setDeferentApogeeModel.deferentCircle pointOnDeferentCircle
+
+                deferentCircleAction =
+                    Disk.Rotate
+                        setDeferentApogeeModel.deferentCircle.center
+                        deferentCircleAngle
             in
-                update
-                    (DeferentCircle <| Disk.Rotate setDeferentApogeeModel.deferentCircle.center
-                                                   deferentCircleAngle)
-                    setDeferentApogeeModel
+                update (DeferentCircle deferentCircleAction) setDeferentApogeeModel
     in
-        { setMeanMotionModel | dateToSet <-
-                                { year = Just date.year
-                                , month = Just date.month
-                                , day = Just date.day
-                                }
-                             , meanEpicyclicAnomaly <- Just <| degreesToRadians meanEpicyclicAnomaly }
+        { setMeanMotionModel
+            | dateToSet =
+                { year = Just date.year
+                , month = Just date.month
+                , day = Just date.day
+                }
+            , meanEpicyclicAnomaly = Just <| degreesToRadians meanEpicyclicAnomaly
+        }
+
 
 -- VIEW
 
@@ -381,7 +479,9 @@ view : Signal.Address Action -> Model -> Html
 view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
               dateToSet, meanEpicyclicAnomaly} =
     let
-        noAction = Signal.forwardTo address <| always None
+        noAction =
+            Signal.forwardTo address <| always None
+
         maybeToString maybe =
             Maybe.withDefault "" <| Maybe.map toString maybe
 
@@ -431,8 +531,10 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
                         , fill "#0000FF"
                         ]
                         []
+
                 Nothing ->
                     g [] []
+
         mars =
             case meanEpicyclicAnomaly of
                 Just marsAngle ->
@@ -451,8 +553,10 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
                             , fill "#FF0000"
                             ]
                             []
+
                 Nothing ->
                     g [] []
+
         marsLongitudeText =
             case meanEpicyclicAnomaly of
                 Just marsAngle ->
@@ -477,6 +581,7 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
                         text <| "The longitude of mars is "
                                 ++ (toString <| round marsLongitudePositive)
                                 ++ " degrees"
+
                 Nothing ->
                     text ""
 
@@ -505,4 +610,5 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
 -- INPUTS
 
 inputs : List (Signal Action)
-inputs = [ Signal.map MouseEvent DragAndDrop.mouseEvents ]
+inputs =
+    [ Signal.map MouseEvent DragAndDrop.mouseEvents ]

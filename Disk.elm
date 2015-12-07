@@ -5,9 +5,8 @@ import Geometry exposing (Radians, Point, rotateAboutPoint, getPointOnCircle,
                           getAngleBetweenPoints, radiansToDegrees)
 
 import DragAndDrop
-import Effects exposing (Effects)
 import Graphics.Input
-import Signal exposing (Mailbox, (<~))
+import Signal exposing (Mailbox)
 import Svg exposing (Svg, circle, defs, pattern, image)
 import Svg.Attributes exposing (id, patternUnits, height, width, xlinkHref,
                                 x, y, transform, cx, cy, r, fill)
@@ -29,6 +28,7 @@ init : { x:Float, y:Float, radius:Float, background:String } -> Model
 init {x, y, radius, background} =
     let
         center = Point x y
+
         model =
             { center = center
             , radius = radius
@@ -42,7 +42,10 @@ init {x, y, radius, background} =
 
 -- UPDATE
 
-type Action = Rotate Point Radians | Select | Unselect
+type Action
+    = Rotate Point Radians
+    | Select
+    | Unselect
 
 
 update : Action -> Model -> Model
@@ -52,18 +55,35 @@ update action model =
         let
             newCenter =
                 rotateAboutPoint rotationCenter angle model.center
+
+            circleWithNewCenter =
+                { center = newCenter
+                , radius = model.radius
+                }
+
             newAngle =
                 model
                     |> flip getPointOnCircle model.angle
                     |> rotateAboutPoint rotationCenter angle
-                    |> getAngleOnCircle { model | center <- newCenter }
+                    |> getAngleOnCircle circleWithNewCenter
+
+            newModel =
+                { model
+                    | center = newCenter
+                    , angle = newAngle
+                }
         in
-            { model | center <- newCenter
-                    , angle <- newAngle }
+            newModel
+
     Select ->
-        { model | selected <- True }
+        { model
+            | selected = True
+        }
+
     Unselect ->
-        { model | selected <- False }
+        { model
+            | selected = False
+        }
 
 
 mouseEventToDiskAction : DragAndDrop.MouseEvent -> Model -> Maybe Action
@@ -78,19 +98,23 @@ mouseEventToDiskAction action model =
                     Just Select
                 else
                     Nothing
+
         DragAndDrop.MoveFromTo origin destination ->
             if model.selected then
                 let
                     originPoint =
                         tupleToPoint origin
+
                     destinationPoint =
                         tupleToPoint destination
+
                     rotationAngle =
                         getAngleBetweenPoints model.center originPoint destinationPoint
                 in
                     Just <| Rotate model.center rotationAngle
             else
                 Nothing 
+
         DragAndDrop.EndAt destination ->
             if model.selected then
                 Just Unselect
