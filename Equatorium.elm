@@ -1,3 +1,5 @@
+-- Simulates a sixteenth century Equatorium Martis.
+
 module Equatorium (Model, init, Action, update, view, inputs) where
 
 import Disk
@@ -15,14 +17,14 @@ import Svg.Attributes exposing (width, height, cx, cy, r, fill)
 
 -- MODEL
 
-type alias Model = 
+type alias Model =
     { zodiac : Disk.Model
     , deferent : Disk.Model
     , deferentCircle : Disk.Model
     , epicycle : Disk.Model
     , earthDisk : Disk.Model
     , scale : Float
-    , dateToSet : 
+    , dateToSet :
         { year : Maybe Int
         , month : Maybe Int
         , day : Maybe Int
@@ -91,7 +93,7 @@ init =
                 }
 
         scaleDisk disk =
-            { disk 
+            { disk
                 | center = Point (disk.center.x * scale) (disk.center.y * scale)
                 , radius = disk.radius * scale
             }
@@ -107,13 +109,14 @@ init =
         }
 
 
--- Index operator for lists of numbers
+-- Index operator for lists of numbers.
 (!!) : List number -> Int -> number
 (!!) xs n  =
     Maybe.withDefault -1 <| List.head (List.drop n xs)
 infixl 9 !!
 
 
+-- Calculates the julian day number of the given date.
 julianDayNumber : Date -> Float
 julianDayNumber {year, month, day} =
     let
@@ -314,17 +317,17 @@ update action model =
 
             Year year ->
                 { model | dateToSet =
-                    { dateToSet | year = Result.toMaybe <| String.toInt year } 
+                    { dateToSet | year = Result.toMaybe <| String.toInt year }
                 }
 
             Month month ->
                 { model | dateToSet =
-                    { dateToSet | month = Result.toMaybe <| String.toInt month } 
+                    { dateToSet | month = Result.toMaybe <| String.toInt month }
                 }
 
             Day day ->
                 { model | dateToSet =
-                    { dateToSet | day = Result.toMaybe <| String.toInt day } 
+                    { dateToSet | day = Result.toMaybe <| String.toInt day }
                 }
 
             SetDate ->
@@ -338,13 +341,13 @@ update action model =
                                 Nothing
 
                     validateMaybe condition maybe =
-                        (Maybe.map condition maybe |> falseToNothing) 
+                        (Maybe.map condition maybe |> falseToNothing)
                             `Maybe.andThen` (always maybe)
 
                     validateYear maybeYear =
                         validateMaybe (flip List.member [0..2099]) maybeYear
 
-                    validateMonth maybeMonth = 
+                    validateMonth maybeMonth =
                         validateMaybe (flip List.member [1..12]) maybeMonth
 
                     validateDay maybeDay maybeMonth =
@@ -361,7 +364,7 @@ update action model =
                         Date year month day |> dateToEquatoriumPosition
 
                     maybeNewModel =
-                        Maybe.map3 
+                        Maybe.map3
                             equatoriumPosition
                             (validateYear model.dateToSet.year)
                             (validateMonth model.dateToSet.month)
@@ -378,6 +381,7 @@ update action model =
                 model
 
 
+-- Calculates the new position of the equatorium from the given date.
 dateToEquatoriumPosition : Date -> Model
 dateToEquatoriumPosition date =
     let
@@ -423,8 +427,8 @@ dateToEquatoriumPosition date =
         setDeferentApogeeModel =
             let
                 deferentAction =
-                    Disk.Rotate 
-                        initialModel.deferent.center 
+                    Disk.Rotate
+                        initialModel.deferent.center
                         (degreesToRadians <| 90 - apogeeLongitude)
             in
                 update (Deferent deferentAction) initialModel
@@ -447,7 +451,7 @@ dateToEquatoriumPosition date =
                     , radius = 25 * setDeferentApogeeModel.scale
                     }
 
-                deferentAngle = 
+                deferentAngle =
                     degreesToRadians <| 90 - meanLongitude
 
                 pointOnDeferentCircle =
@@ -589,7 +593,7 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
             svg
                 [ width <| toString <| zodiac.center.x + zodiac.radius
                 , height <| toString <| zodiac.center.y + zodiac.radius
-                ] 
+                ]
                 <| List.concat
                     [ Disk.view noAction zodiac
                     , Disk.view (Signal.forwardTo address Deferent) deferent

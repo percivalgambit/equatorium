@@ -1,3 +1,5 @@
+-- Represents a single disk in the model of an Equatorium.
+
 module Disk (Model, init, Action(..), update, view, mouseEventToDiskAction) where
 
 import Geometry exposing (Radians, Point, rotateAboutPoint, getPointOnCircle,
@@ -5,17 +7,14 @@ import Geometry exposing (Radians, Point, rotateAboutPoint, getPointOnCircle,
                           getAngleBetweenPoints, radiansToDegrees)
 
 import DragAndDrop
-import Graphics.Input
-import Signal exposing (Mailbox)
 import Svg exposing (Svg, circle, defs, pattern, image)
 import Svg.Attributes exposing (id, patternUnits, height, width, xlinkHref,
                                 x, y, transform, cx, cy, r, fill)
-import Svg.Events exposing (onClick)
 
 
 -- MODEL
 
-type alias Model = 
+type alias Model =
     { center : Point
     , radius : Float
     , background : String
@@ -43,7 +42,7 @@ init {x, y, radius, background} =
 -- UPDATE
 
 type Action
-    = Rotate Point Radians
+    = Rotate Point Radians -- Rotates the disk about the given point.
     | Select
     | Unselect
 
@@ -86,6 +85,7 @@ update action model =
         }
 
 
+-- Converts a MousEvent from the DragAndDrop package to an action on a Disk.
 mouseEventToDiskAction : DragAndDrop.MouseEvent -> Model -> Maybe Action
 mouseEventToDiskAction action model =
     case action of
@@ -113,7 +113,7 @@ mouseEventToDiskAction action model =
                 in
                     Just <| Rotate model.center rotationAngle
             else
-                Nothing 
+                Nothing
 
         DragAndDrop.EndAt destination ->
             if model.selected then

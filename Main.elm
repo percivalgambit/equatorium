@@ -1,4 +1,4 @@
--- Mostly coppied from the evancz/start-app elm package
+-- Mostly coppied from the evancz/start-app elm package.
 
 import Equatorium exposing (init, update, view, inputs)
 
