@@ -1,6 +1,8 @@
 module Equatorium (Model, init, Action, update, view, inputs) where
 
 import Disk
+import Geometry exposing (Radians, Point, radiansToDegrees, degreesToRadians,
+                          getPointOnCircle, getAngleOnCircle)
 
 import DragAndDrop
 import Effects exposing (Effects)
@@ -9,7 +11,7 @@ import Html.Attributes exposing (value)
 import Html.Events exposing (on, onClick, targetValue)
 import String
 import Svg exposing (circle, g, svg)
-import Svg.Attributes exposing (..)
+import Svg.Attributes exposing (width, height, cx, cy, r, fill)
 
 
 -- MODEL
@@ -26,7 +28,7 @@ type alias Model =
         , month : Maybe Int
         , day : Maybe Int
         }
-    , meanEpicyclicAnomaly : Maybe Float
+    , meanEpicyclicAnomaly : Maybe Radians
     }
 
 type alias Date =
@@ -39,16 +41,21 @@ type alias Date =
 init : (Model, Effects Action)
 init =
     let
-        (zodiac, _) =
-            Disk.init { x = 125, y = 125, radius = 110, background = "Zodiac.png" }
-        (deferent, deferentFx) =
-            Disk.init { x = 125, y = 125, radius = 98, background = "Deferent.png" }
-        (deferentCircle, deferentCircleFx) =
-            Disk.init { x = 125, y = 120, radius = 90, background = "DeferentCircle.png" }
-        (epicycle, epicycleFx) =
-            Disk.init { x = 125, y = 70, radius = 35, background = "Epicycle.png" }
-        (earthDisk, _) =
-            Disk.init { x = 125, y = 120, radius = 14, background = "EarthDisk.png" }
+        zodiac =
+            Disk.init
+                { x = 125, y = 125, radius = 110, background = "Zodiac.png" }
+        deferent =
+            Disk.init
+                { x = 125, y = 125, radius = 98, background = "Deferent.png" }
+        deferentCircle =
+            Disk.init
+                { x = 125, y = 120, radius = 90, background = "DeferentCircle.png" }
+        epicycle =
+            Disk.init
+                { x = 125, y = 70, radius = 35, background = "Epicycle.png" }
+        earthDisk =
+            Disk.init
+                { x = 125, y = 120, radius = 14, background = "EarthDisk.png" }
         scale =
             3
 
@@ -59,25 +66,23 @@ init =
                 }
 
         scaleDisk disk =
-            { disk | center <- Disk.Point (disk.center.x * scale) (disk.center.y * scale)
+            { disk | center <- Point (disk.center.x * scale) (disk.center.y * scale)
             ,        radius <- disk.radius * scale
             }
-    in
-        ( { zodiac = scaleDisk zodiac
-          , deferent = scaleDisk deferent
-          , deferentCircle = scaleDisk deferentCircle
-          , epicycle = scaleDisk epicycle
-          , earthDisk = scaleDisk earthDisk
-          , scale = scale
 
-          , dateToSet = dateToSet
-          , meanEpicyclicAnomaly = Nothing
-          }
-        , Effects.batch
-            [ Effects.map Deferent deferentFx
-            , Effects.map DeferentCircle deferentCircleFx
-            , Effects.map Epicycle epicycleFx
-            ]
+        model =
+            { zodiac = scaleDisk zodiac
+            , deferent = scaleDisk deferent
+            , deferentCircle = scaleDisk deferentCircle
+            , epicycle = scaleDisk epicycle
+            , earthDisk = scaleDisk earthDisk
+            , scale = scale
+            , dateToSet = dateToSet
+            , meanEpicyclicAnomaly = Nothing
+            }
+    in
+        ( model
+        , Effects.none
         )
 
 
@@ -213,10 +218,10 @@ update action model =
                             sameModel
             Deferent act ->
                 let
-                    (newDeferent, deferentFx) = Disk.update act model.deferent
-                    (newDeferentCircle, deferentCircleFx) = Disk.update act model.deferentCircle
-                    (newEpicycle, epicycleFx) = Disk.update act model.epicycle
-                    (newEarthDisk, _) = Disk.update act model.earthDisk
+                    newDeferent = Disk.update act model.deferent
+                    newDeferentCircle = Disk.update act model.deferentCircle
+                    newEpicycle = Disk.update act model.epicycle
+                    newEarthDisk = Disk.update act model.earthDisk
                 in
                     case act of
                         Disk.Rotate _ _ ->
@@ -225,44 +230,37 @@ update action model =
                                       , epicycle <- newEpicycle
                                       , earthDisk <- newEarthDisk
                                       , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.batch
-                                [ Effects.map Deferent deferentFx
-                                , Effects.map DeferentCircle deferentCircleFx
-                                , Effects.map Epicycle epicycleFx
-                                ]
+                            , Effects.none
                             )
                         _ ->
                             ( { model | deferent <- newDeferent
                                       , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.map Deferent deferentFx
+                            , Effects.none
                             )
             DeferentCircle act ->
                 let
-                    (newDeferentCircle, deferentCircleFx) = Disk.update act model.deferentCircle
-                    (newEpicycle, epicycleFx) = Disk.update act model.epicycle
+                    newDeferentCircle = Disk.update act model.deferentCircle
+                    newEpicycle = Disk.update act model.epicycle
                 in
                     case act of
                         Disk.Rotate _ _ ->
                             ( { model | deferentCircle <- newDeferentCircle
                                       , epicycle <- newEpicycle
                                       , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.batch
-                                [ Effects.map DeferentCircle deferentCircleFx
-                                , Effects.map Epicycle epicycleFx
-                                ]
+                            , Effects.none
                             )
                         _ ->
                             ( { model | deferentCircle <- newDeferentCircle
                                       , meanEpicyclicAnomaly <- Nothing }
-                            , Effects.map DeferentCircle deferentCircleFx
+                            , Effects.none
                             )
             Epicycle act ->
                 let
-                    (newEpicycle, epicycleFx) = Disk.update act model.epicycle
+                    newEpicycle = Disk.update act model.epicycle
                 in
                     ( { model | epicycle <- newEpicycle
                               , meanEpicyclicAnomaly <- Nothing }
-                    , Effects.map Epicycle epicycleFx
+                    , Effects.none
                     )
             Year year ->
                 ( { model | dateToSet <-
@@ -342,28 +340,28 @@ dateToEquatoriumPosition date =
         (setDeferentApogeeModel, _) =
             update
                 (Deferent <| Disk.Rotate initialModel.deferent.center 
-                                         (degrees <| 90 - apogeeLongitude))
+                                         (degreesToRadians <| 90 - apogeeLongitude))
                 initialModel
         (setMeanMotionModel, _) =
             let
-                earthDisk =
+                earthCircle =
                     { center = setDeferentApogeeModel.zodiac.center
                     , radius = 10 * setDeferentApogeeModel.scale
-                    , angle = setDeferentApogeeModel.earthDisk.angle
                     }
+                earthAngle =
+                    setDeferentApogeeModel.earthDisk.angle
                 pointOnEarthDisk =
-                    Disk.getAnglePosition earthDisk
+                    getPointOnCircle earthCircle earthAngle
                 deferentCircle =
                     { center = pointOnEarthDisk
                     , radius = 25 * setDeferentApogeeModel.scale
-                    , angle = degrees <| 90 - meanLongitude
                     }
+                deferentAngle = 
+                    degreesToRadians <| 90 - meanLongitude
                 pointOnDeferentCircle =
-                    Disk.getAnglePosition deferentCircle
+                    getPointOnCircle deferentCircle <| degreesToRadians deferentAngle
                 deferentCircleAngle =
-                    -pi/2 - atan2
-                        (pointOnDeferentCircle.y - setDeferentApogeeModel.deferentCircle.center.y)
-                        (pointOnDeferentCircle.x - setDeferentApogeeModel.deferentCircle.center.x)
+                    getAngleOnCircle setDeferentApogeeModel.deferentCircle pointOnDeferentCircle
             in
                 update
                     (DeferentCircle <| Disk.Rotate setDeferentApogeeModel.deferentCircle.center
@@ -375,7 +373,7 @@ dateToEquatoriumPosition date =
                                 , month = Just date.month
                                 , day = Just date.day
                                 }
-                             , meanEpicyclicAnomaly <- Just meanEpicyclicAnomaly }
+                             , meanEpicyclicAnomaly <- Just <| degreesToRadians meanEpicyclicAnomaly }
 
 -- VIEW
 
@@ -439,13 +437,12 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
             case meanEpicyclicAnomaly of
                 Just marsAngle ->
                     let
-                        marsDisk =
+                        marsCircle =
                             { center = epicycle.center
                             , radius = epicycle.radius
-                            , angle = epicycle.angle - marsAngle
                             }
                         marsPosition =
-                            Disk.getAnglePosition marsDisk
+                            getPointOnCircle marsCircle (epicycle.angle - marsAngle)
                     in
                         circle
                             [ cx <| toString <| marsPosition.x
@@ -460,18 +457,16 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
             case meanEpicyclicAnomaly of
                 Just marsAngle ->
                     let
-                        marsDisk =
+                        marsCircle =
                             { center = epicycle.center
                             , radius = epicycle.radius
-                            , angle = epicycle.angle - marsAngle
                             }
                         marsPosition =
-                            Disk.getAnglePosition marsDisk
+                            getPointOnCircle marsCircle (epicycle.angle - marsAngle)
                         marsLongitudeRadians =
-                            -(atan2 (marsPosition.y - zodiac.center.y)
-                                    (marsPosition.x - zodiac.center.x))
+                            pi/2 - getAngleOnCircle zodiac marsPosition
                         marsLongitude =
-                            marsLongitudeRadians * 180/pi
+                            radiansToDegrees marsLongitudeRadians
                         marsLongitudePositive =
                             if marsLongitude < 0 then
                                 marsLongitude + 360
@@ -501,7 +496,10 @@ view address {zodiac, deferent, deferentCircle, epicycle, earthDisk, scale,
     in
         div
             []
-            [ equatorium, dateField, marsLongitudeText ]
+            [ div
+                []
+                [ equatorium, dateField ]
+            , marsLongitudeText ]
 
 
 -- INPUTS
